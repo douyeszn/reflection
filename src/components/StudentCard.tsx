@@ -15,10 +15,10 @@ const trendIcon = {
 }
 
 const avatarStyles: Record<Student['status'], { bg: string; color: string }> = {
-  high:       { bg: '#f0fdfa', color: '#0F766E' },
-  moderate:   { bg: '#fffbeb', color: '#d97706' },
-  fading:     { bg: '#fff7ed', color: '#ea580c' },
-  disengaged: { bg: '#fef2f2', color: '#dc2626' },
+  high:       { bg: '#f1f5f9', color: '#0F766E' },
+  moderate:   { bg: '#f1f5f9', color: '#b45309' },
+  fading:     { bg: '#f1f5f9', color: '#ea580c' },
+  disengaged: { bg: '#f1f5f9', color: '#dc2626' },
 }
 
 export function StudentCard({ student, onClick }: Props) {
@@ -85,6 +85,12 @@ export function StudentCard({ student, onClick }: Props) {
         {student.fadingSince && (
           <p className="text-xs" style={{ color: '#94a3b8' }}>since {student.fadingSince}</p>
         )}
+      </div>
+
+      {/* Score bar */}
+      <div className="mt-3.5 h-1 rounded-full overflow-hidden" style={{ background: '#f1f5f9' }}>
+        <div className="h-full rounded-full"
+          style={{ width: `${student.score}%`, background: av.color, transition: 'width 0.8s cubic-bezier(0.19,1,0.22,1)' }} />
       </div>
     </button>
   )

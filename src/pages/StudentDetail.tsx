@@ -55,10 +55,10 @@ const interpConfig = {
 }
 
 const avatarStyles: Record<string, { bg: string; color: string }> = {
-  high:       { bg: '#f0fdfa', color: '#0F766E' },
-  moderate:   { bg: '#fffbeb', color: '#d97706' },
-  fading:     { bg: '#fff7ed', color: '#ea580c' },
-  disengaged: { bg: '#fef2f2', color: '#dc2626' },
+  high:       { bg: '#f1f5f9', color: '#0F766E' },
+  moderate:   { bg: '#f1f5f9', color: '#b45309' },
+  fading:     { bg: '#f1f5f9', color: '#ea580c' },
+  disengaged: { bg: '#f1f5f9', color: '#dc2626' },
 }
 
 const cardStyle = {
@@ -84,7 +84,7 @@ export function StudentDetail({ studentId, onBack }: Props) {
   const explFill    = Math.min(100, (student.signals.explorationDepth  /   15) * 100)
 
   return (
-    <div style={{ background: '#ffffff', minHeight: '100vh' }}>
+    <div style={{ background: '#FAFAF5', minHeight: '100vh' }}>
       <Header onBack={onBack} title={student.name} />
 
       <main className="max-w-3xl mx-auto px-4 sm:px-6 py-10 space-y-5 animate-fade-in">
@@ -97,7 +97,7 @@ export function StudentDetail({ studentId, onBack }: Props) {
               {student.avatar}
             </div>
             <div className="flex-1 min-w-0">
-              <h1 className="text-xl font-extrabold tracking-tight" style={{ color: '#0C1825' }}>{student.name}</h1>
+              <h1 className="text-xl font-extrabold tracking-tight" style={{ color: '#0C1825', fontFamily: "'Bricolage Grotesque', system-ui, sans-serif" }}>{student.name}</h1>
               <div className="flex items-center gap-2 mt-1.5 flex-wrap">
                 <EngagementBadge status={student.status} size="md" />
                 <span className="text-xs flex items-center gap-1" style={{ color: '#94a3b8' }}>
@@ -124,7 +124,7 @@ export function StudentDetail({ studentId, onBack }: Props) {
         <div style={cardStyle} className="p-6">
           <div className="flex items-center justify-between mb-4">
             <div>
-              <h2 className="text-base font-bold" style={{ color: '#0C1825' }}>Engagement Timeline</h2>
+              <h2 className="text-base font-bold" style={{ color: '#0C1825', fontFamily: "'Bricolage Grotesque', system-ui, sans-serif" }}>Engagement Timeline</h2>
               <p className="text-xs mt-0.5" style={{ color: '#94a3b8' }}>Last 10 sessions</p>
             </div>
             <span className="text-xs font-semibold px-2.5 py-1 rounded-full"

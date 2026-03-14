@@ -22,13 +22,14 @@ export function AlertBanner({ students, onStudentClick }: Props) {
             key={student.id}
             className="flex items-start gap-3 rounded-2xl p-4"
             style={{
-              background: isCritical ? '#fef2f2' : '#fff7ed',
+              background: '#fff',
               border: `1px solid ${isCritical ? '#fecaca' : '#fed7aa'}`,
+              boxShadow: '0 1px 3px rgba(0,0,0,0.04)',
             }}
           >
             <div
               className="w-8 h-8 rounded-xl flex items-center justify-center flex-shrink-0 mt-0.5"
-              style={{ background: isCritical ? '#fee2e2' : '#ffedd5' }}
+              style={{ background: isCritical ? '#fef2f2' : '#fff7ed' }}
             >
               <AlertTriangle className="w-4 h-4" style={{ color: isCritical ? '#dc2626' : '#ea580c' }} />
             </div>

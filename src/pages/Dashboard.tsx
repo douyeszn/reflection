@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useState, useMemo } from 'react'
 import { Search, SlidersHorizontal } from 'lucide-react'
 import { Header } from '../components/Header'
 import { StatCard } from '../components/StatCard'
@@ -33,17 +33,17 @@ export function Dashboard({ onStudentSelect }: Props) {
   const [filter, setFilter] = useState<Filter>('all')
   const [search, setSearch] = useState('')
 
-  const filtered = STUDENTS.filter(s => {
+  const filtered = useMemo(() => STUDENTS.filter(s => {
     const matchesFilter = filter === 'all' || s.status === filter
     const matchesSearch = s.name.toLowerCase().includes(search.toLowerCase()) ||
       s.currentTopic.toLowerCase().includes(search.toLowerCase())
     return matchesFilter && matchesSearch
-  })
+  }), [filter, search])
 
-  const alertStudents = STUDENTS.filter(s => s.alertMessage)
+  const alertStudents = useMemo(() => STUDENTS.filter(s => s.alertMessage), [])
 
   return (
-    <div style={{ background: '#ffffff', minHeight: '100vh' }}>
+    <div style={{ background: '#FAFAF5', minHeight: '100vh' }}>
       <Header stats={CLASS_STATS} />
 
       <main className="max-w-5xl mx-auto px-4 sm:px-6 py-10 space-y-10 animate-fade-in">
@@ -53,7 +53,7 @@ export function Dashboard({ onStudentSelect }: Props) {
           <p className="text-xs font-semibold uppercase tracking-widest mb-1.5" style={{ color: '#94a3b8' }}>
             Today · Live
           </p>
-          <h1 className="font-extrabold leading-tight tracking-tight" style={{ fontSize: 'clamp(26px,3.5vw,36px)', color: '#0C1825' }}>
+          <h1 className="font-extrabold leading-tight tracking-tight" style={{ fontSize: 'clamp(26px,3.5vw,36px)', color: '#0C1825', fontFamily: "'Bricolage Grotesque', system-ui, sans-serif" }}>
             Class Overview
           </h1>
           <p className="text-sm mt-1.5" style={{ color: '#94a3b8' }}>
