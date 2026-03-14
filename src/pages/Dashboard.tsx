@@ -1,5 +1,5 @@
 import { useState, useMemo } from 'react'
-import { Search, SlidersHorizontal } from 'lucide-react'
+import { Search, SlidersHorizontal, ArrowUpDown, BookOpen } from 'lucide-react'
 import { Header } from '../components/Header'
 import { StatCard } from '../components/StatCard'
 import { StudentCard } from '../components/StudentCard'
@@ -12,6 +12,7 @@ interface Props {
 }
 
 type Filter = 'all' | EngagementStatus
+type SortOrder = 'score-desc' | 'score-asc' | 'name' | 'needs-help'
 
 const filterLabels: Record<Filter, string> = {
   all:        'All',
@@ -29,18 +30,61 @@ const filterCounts: Record<Filter, number> = {
   disengaged: CLASS_STATS.disengaged,
 }
 
-export function Dashboard({ onStudentSelect }: Props) {
-  const [filter, setFilter] = useState<Filter>('all')
-  const [search, setSearch] = useState('')
+const sortLabels: Record<SortOrder, string> = {
+  'score-desc': 'Score ↓',
+  'score-asc':  'Score ↑',
+  'name':       'Name A–Z',
+  'needs-help': 'Needs help first',
+}
 
-  const filtered = useMemo(() => STUDENTS.filter(s => {
-    const matchesFilter = filter === 'all' || s.status === filter
-    const matchesSearch = s.name.toLowerCase().includes(search.toLowerCase()) ||
-      s.currentTopic.toLowerCase().includes(search.toLowerCase())
-    return matchesFilter && matchesSearch
-  }), [filter, search])
+const statusOrder: Record<EngagementStatus, number> = {
+  disengaged: 0, fading: 1, moderate: 2, high: 3,
+}
+
+export function Dashboard({ onStudentSelect }: Props) {
+  const [filter, setFilter]     = useState<Filter>('all')
+  const [search, setSearch]     = useState('')
+  const [sort, setSort]         = useState<SortOrder>('needs-help')
+  const [showTopics, setShowTopics] = useState(true)
+
+  const filtered = useMemo(() => {
+    const result = STUDENTS.filter(s => {
+      const matchesFilter = filter === 'all' || s.status === filter
+      const matchesSearch = s.name.toLowerCase().includes(search.toLowerCase()) ||
+        s.currentTopic.toLowerCase().includes(search.toLowerCase())
+      return matchesFilter && matchesSearch
+    })
+    return [...result].sort((a, b) => {
+      switch (sort) {
+        case 'score-desc':  return b.score - a.score
+        case 'score-asc':   return a.score - b.score
+        case 'name':        return a.name.localeCompare(b.name)
+        case 'needs-help':  return statusOrder[a.status] - statusOrder[b.status]
+      }
+    })
+  }, [filter, search, sort])
 
   const alertStudents = useMemo(() => STUDENTS.filter(s => s.alertMessage), [])
+
+  // Topic breakdown — group students by currentTopic
+  const topicBreakdown = useMemo(() => {
+    const map = new Map<string, { total: number; struggling: number; scores: number[] }>()
+    STUDENTS.forEach(s => {
+      if (!map.has(s.currentTopic)) map.set(s.currentTopic, { total: 0, struggling: 0, scores: [] })
+      const entry = map.get(s.currentTopic)!
+      entry.total++
+      entry.scores.push(s.score)
+      if (s.status === 'fading' || s.status === 'disengaged') entry.struggling++
+    })
+    return [...map.entries()]
+      .map(([topic, { total, struggling, scores }]) => ({
+        topic,
+        total,
+        struggling,
+        avgScore: Math.round(scores.reduce((a, b) => a + b, 0) / scores.length),
+      }))
+      .sort((a, b) => b.struggling - a.struggling || a.avgScore - b.avgScore)
+  }, [])
 
   return (
     <div style={{ background: '#FAFAF5', minHeight: '100vh' }}>
@@ -57,14 +101,13 @@ export function Dashboard({ onStudentSelect }: Props) {
                 Live · Today
               </p>
             </div>
-            <h1 className="font-extrabold leading-tight tracking-tight" style={{ fontSize: 'clamp(26px,3.5vw,36px)', color: '#0C1825', fontFamily: "'Bricolage Grotesque', system-ui, sans-serif" }}>
+            <h1 className="font-extrabold leading-tight" style={{ fontSize: 'clamp(26px,3.5vw,36px)', color: '#0C1825', fontFamily: "'Bricolage Grotesque', system-ui, sans-serif" }}>
               Class Overview
             </h1>
             <p className="text-sm mt-1.5" style={{ color: '#94a3b8' }}>
               Curiosity patterns across {CLASS_STATS.totalStudents} students
             </p>
           </div>
-          {/* Week summary chip */}
           <div className="flex items-center gap-3 rounded-2xl px-5 py-3 flex-shrink-0"
             style={{ background: 'white', border: '1px solid #f1f5f9', boxShadow: '0 1px 3px rgba(0,0,0,0.04)' }}>
             <div className="text-center">
@@ -116,6 +159,67 @@ export function Dashboard({ onStudentSelect }: Props) {
           </section>
         )}
 
+        {/* Topic breakdown */}
+        <section>
+          <button
+            onClick={() => setShowTopics(v => !v)}
+            className="flex items-center gap-2 w-full mb-4"
+            style={{ background: 'none', border: 'none', cursor: 'pointer', padding: 0 }}
+          >
+            <BookOpen className="w-3.5 h-3.5" style={{ color: '#94a3b8' }} />
+            <h2 className="text-xs font-semibold uppercase tracking-widest" style={{ color: '#94a3b8' }}>
+              Topics at a glance
+            </h2>
+            <span className="ml-auto text-xs" style={{ color: '#cbd5e1' }}>{showTopics ? '↑ hide' : '↓ show'}</span>
+          </button>
+
+          {showTopics && (
+            <div className="rounded-2xl overflow-hidden"
+              style={{ background: 'white', border: '1px solid #f1f5f9', boxShadow: '0 1px 3px rgba(0,0,0,0.04)' }}>
+              {topicBreakdown.map((row, i) => {
+                const isRisky = row.struggling > 0
+                const pct = row.avgScore
+                const barColor = pct >= 70 ? '#0F766E' : pct >= 50 ? '#d97706' : '#dc2626'
+                return (
+                  <div
+                    key={row.topic}
+                    className="flex items-center gap-4 px-5 py-3.5"
+                    style={{ borderBottom: i < topicBreakdown.length - 1 ? '1px solid #f8fafc' : 'none' }}
+                  >
+                    <div className="w-2 h-2 rounded-full flex-shrink-0"
+                      style={{ background: isRisky ? (row.struggling > 1 ? '#dc2626' : '#ea580c') : '#22c55e' }} />
+
+                    <p className="text-sm font-semibold flex-1 truncate" style={{ color: '#0C1825' }}>
+                      {row.topic}
+                    </p>
+
+                    <div className="hidden sm:flex items-center gap-1.5 flex-shrink-0">
+                      <div className="w-24 h-1.5 rounded-full overflow-hidden" style={{ background: '#f1f5f9' }}>
+                        <div className="h-full rounded-full" style={{ width: `${pct}%`, background: barColor }} />
+                      </div>
+                      <span className="text-xs font-bold w-7 text-right" style={{ color: barColor }}>{pct}</span>
+                    </div>
+
+                    <div className="flex items-center gap-2 flex-shrink-0">
+                      <span className="text-xs" style={{ color: '#94a3b8' }}>{row.total} students</span>
+                      {isRisky && (
+                        <span className="text-xs font-semibold px-2 py-0.5 rounded-full"
+                          style={{
+                            background: row.struggling > 1 ? '#fef2f2' : '#fff7ed',
+                            color: row.struggling > 1 ? '#b91c1c' : '#c2410c',
+                            border: `1px solid ${row.struggling > 1 ? '#fecaca' : '#fed7aa'}`,
+                          }}>
+                          {row.struggling} struggling
+                        </span>
+                      )}
+                    </div>
+                  </div>
+                )
+              })}
+            </div>
+          )}
+        </section>
+
         {/* Students */}
         <section>
           <div className="flex flex-col sm:flex-row sm:items-center gap-3 mb-6">
@@ -147,7 +251,7 @@ export function Dashboard({ onStudentSelect }: Props) {
             </div>
 
             {/* Filter pills */}
-            <div className="flex items-center gap-1.5 flex-wrap">
+            <div className="flex items-center gap-1.5 flex-wrap flex-1">
               <SlidersHorizontal className="w-3.5 h-3.5 flex-shrink-0" style={{ color: '#cbd5e1' }} />
               {(Object.keys(filterLabels) as Filter[]).map(f => (
                 <button
@@ -166,6 +270,28 @@ export function Dashboard({ onStudentSelect }: Props) {
                   <span className="ml-1.5 opacity-60">{filterCounts[f]}</span>
                 </button>
               ))}
+            </div>
+
+            {/* Sort */}
+            <div className="flex items-center gap-1.5 flex-shrink-0">
+              <ArrowUpDown className="w-3.5 h-3.5 flex-shrink-0" style={{ color: '#cbd5e1' }} />
+              <div className="flex items-center gap-1">
+                {(Object.keys(sortLabels) as SortOrder[]).map(s => (
+                  <button
+                    key={s}
+                    onClick={() => setSort(s)}
+                    className="px-2.5 py-1.5 rounded-lg text-xs font-medium"
+                    style={{
+                      background: sort === s ? '#0C1825' : '#ffffff',
+                      color:      sort === s ? '#ffffff' : '#94a3b8',
+                      border:     sort === s ? '1px solid #0C1825' : '1px solid #e2e8f0',
+                      transition: 'all 0.3s cubic-bezier(0.19,1,0.22,1)',
+                    }}
+                  >
+                    {sortLabels[s]}
+                  </button>
+                ))}
+              </div>
             </div>
           </div>
 
