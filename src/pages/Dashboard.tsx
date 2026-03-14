@@ -49,16 +49,45 @@ export function Dashboard({ onStudentSelect }: Props) {
       <main className="max-w-5xl mx-auto px-4 sm:px-6 py-10 space-y-10 animate-fade-in">
 
         {/* Page title */}
-        <div>
-          <p className="text-xs font-semibold uppercase tracking-widest mb-1.5" style={{ color: '#94a3b8' }}>
-            Today · Live
-          </p>
-          <h1 className="font-extrabold leading-tight tracking-tight" style={{ fontSize: 'clamp(26px,3.5vw,36px)', color: '#0C1825', fontFamily: "'Bricolage Grotesque', system-ui, sans-serif" }}>
-            Class Overview
-          </h1>
-          <p className="text-sm mt-1.5" style={{ color: '#94a3b8' }}>
-            Curiosity patterns across {CLASS_STATS.totalStudents} students
-          </p>
+        <div className="flex items-start justify-between gap-4 flex-wrap">
+          <div>
+            <div className="flex items-center gap-2 mb-1.5">
+              <span className="w-1.5 h-1.5 rounded-full bg-green-400 animate-pulse" />
+              <p className="text-xs font-semibold uppercase tracking-widest" style={{ color: '#94a3b8' }}>
+                Live · Today
+              </p>
+            </div>
+            <h1 className="font-extrabold leading-tight tracking-tight" style={{ fontSize: 'clamp(26px,3.5vw,36px)', color: '#0C1825', fontFamily: "'Bricolage Grotesque', system-ui, sans-serif" }}>
+              Class Overview
+            </h1>
+            <p className="text-sm mt-1.5" style={{ color: '#94a3b8' }}>
+              Curiosity patterns across {CLASS_STATS.totalStudents} students
+            </p>
+          </div>
+          {/* Week summary chip */}
+          <div className="flex items-center gap-3 rounded-2xl px-5 py-3 flex-shrink-0"
+            style={{ background: 'white', border: '1px solid #f1f5f9', boxShadow: '0 1px 3px rgba(0,0,0,0.04)' }}>
+            <div className="text-center">
+              <p className="text-base font-extrabold" style={{ color: '#dc2626', fontFamily: "'Bricolage Grotesque', system-ui, sans-serif" }}>
+                {CLASS_STATS.fading + CLASS_STATS.disengaged}
+              </p>
+              <p className="text-xs" style={{ color: '#94a3b8' }}>need attention</p>
+            </div>
+            <div className="w-px h-8" style={{ background: '#f1f5f9' }} />
+            <div className="text-center">
+              <p className="text-base font-extrabold" style={{ color: '#0F766E', fontFamily: "'Bricolage Grotesque', system-ui, sans-serif" }}>
+                {CLASS_STATS.highEngagement}
+              </p>
+              <p className="text-xs" style={{ color: '#94a3b8' }}>thriving</p>
+            </div>
+            <div className="w-px h-8" style={{ background: '#f1f5f9' }} />
+            <div className="text-center">
+              <p className="text-base font-extrabold" style={{ color: '#0C1825', fontFamily: "'Bricolage Grotesque', system-ui, sans-serif" }}>
+                {CLASS_STATS.avgScore}
+              </p>
+              <p className="text-xs" style={{ color: '#94a3b8' }}>avg score</p>
+            </div>
+          </div>
         </div>
 
         {/* Stats */}

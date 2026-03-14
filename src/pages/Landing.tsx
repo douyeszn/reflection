@@ -12,30 +12,6 @@ const stats = [
   { value: '5',    label: 'curiosity signals tracked' },
 ]
 
-const features = [
-  {
-    icon: <Zap className="w-5 h-5" />,
-    color: '#d97706', bg: '#fffbeb', border: '#fde68a',
-    tag: 'Detection',
-    title: 'See whose spark is fading',
-    desc: 'Dwell time, revisit rate, and exploration depth surface as behavioral signals — no interruption to learning.',
-  },
-  {
-    icon: <Users className="w-5 h-5" />,
-    color: '#0F766E', bg: '#ccfbf1', border: '#5eead4',
-    tag: 'Alerts',
-    title: 'Named students, not averages',
-    desc: 'Know exactly which student is disengaging, on which topic, and since when — not a class-wide percentage.',
-  },
-  {
-    icon: <TrendingUp className="w-5 h-5" />,
-    color: '#15803d', bg: '#bbf7d0', border: '#86efac',
-    tag: 'History',
-    title: 'Track curiosity over time',
-    desc: 'Session-by-session timelines with curiosity spikes and confusion markers — spot patterns before they become problems.',
-  },
-]
-
 // Mini dashboard preview — the "unforgettable" hero visual
 const PREVIEW_STUDENTS = [
   { initials: 'AU', name: 'Amara U.',    score: 38, status: 'fading',     color: '#ea580c' },
@@ -125,6 +101,19 @@ export function Landing({ onEnter }: Props) {
               Reflection
             </span>
           </div>
+
+          <div className="hidden md:flex items-center gap-7">
+            {['How it works', 'For Teachers', 'For Students'].map(label => (
+              <button key={label} className="text-sm font-medium"
+                style={{ color: '#64748b', background: 'none', border: 'none', cursor: 'pointer',
+                  transition: 'color 0.25s' }}
+                onMouseEnter={e => (e.currentTarget.style.color = '#0C1825')}
+                onMouseLeave={e => (e.currentTarget.style.color = '#64748b')}>
+                {label}
+              </button>
+            ))}
+          </div>
+
           <button onClick={onEnter} className="btn-primary" style={{ padding: '8px 18px', fontSize: '13px' }}>
             Open dashboard
           </button>
@@ -136,14 +125,21 @@ export function Landing({ onEnter }: Props) {
         {/* Warm gradient overlay over dot grid */}
         <div className="absolute inset-0 pointer-events-none"
           style={{ background: 'linear-gradient(135deg, rgba(250,250,245,0.97) 50%, rgba(240,253,250,0.85) 100%)' }} />
+        {/* Decorative geometric accents */}
+        <div className="absolute top-12 right-12 w-40 h-40 rounded-full pointer-events-none opacity-30"
+          style={{ background: 'radial-gradient(circle, #ccfbf1 0%, transparent 70%)' }} />
+        <div className="absolute bottom-0 left-8 w-28 h-28 rounded-2xl pointer-events-none opacity-20 rotate-12"
+          style={{ background: '#fde68a' }} />
 
         <div className="relative max-w-6xl mx-auto px-6 sm:px-10 py-20 sm:py-28">
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-16 items-center">
 
             {/* Left: text */}
             <div className="animate-fade-in">
-              <h1 className="font-extrabold leading-[1.06] tracking-tight mb-6"
-                style={{ fontSize: 'clamp(38px, 5.5vw, 68px)', color: '#0C1825', fontFamily: "'Bricolage Grotesque', system-ui, sans-serif" }}>
+              <h1 className="font-extrabold leading-[1.03] mb-6"
+                style={{ fontSize: 'clamp(40px, 5.8vw, 72px)', color: '#0C1825',
+                  fontFamily: "'Bricolage Grotesque', system-ui, sans-serif",
+                  letterSpacing: '-0.03em' }}>
                 No passion<br />should go<br />
                 <span style={{ color: '#0F766E' }}>undiscovered.</span>
               </h1>
@@ -174,7 +170,23 @@ export function Landing({ onEnter }: Props) {
             </div>
 
             {/* Right: mini dashboard — the memorable visual */}
-            <div className="hidden lg:block animate-slide-up" style={{ animationDelay: '150ms' }}>
+            <div className="hidden lg:flex flex-col items-center animate-slide-up relative" style={{ animationDelay: '150ms' }}>
+              {/* Floating chips */}
+              <div className="absolute -top-4 -left-6 z-10 flex items-center gap-2 rounded-full px-3 py-1.5 text-xs font-semibold animate-slide-up"
+                style={{ background: '#fff7ed', border: '1px solid #fed7aa', color: '#c2410c', boxShadow: '0 4px 16px rgba(234,88,12,0.12)', animationDelay: '400ms' }}>
+                <span className="w-1.5 h-1.5 rounded-full bg-orange-400" />
+                Amara fading · 3 days
+              </div>
+              <div className="absolute -bottom-4 -right-4 z-10 flex items-center gap-2 rounded-full px-3 py-1.5 text-xs font-semibold animate-slide-up"
+                style={{ background: '#f0fdf4', border: '1px solid #bbf7d0', color: '#15803d', boxShadow: '0 4px 16px rgba(21,128,61,0.10)', animationDelay: '550ms' }}>
+                <TrendingUp className="w-3 h-3" />
+                Nakato on a spike
+              </div>
+              <div className="absolute top-1/2 -right-10 z-10 flex items-center gap-2 rounded-full px-3 py-1.5 text-xs font-semibold animate-slide-up"
+                style={{ background: 'white', border: '1px solid #e2e8f0', color: '#0C1825', boxShadow: '0 4px 16px rgba(0,0,0,0.06)', animationDelay: '650ms' }}>
+                <span className="w-1.5 h-1.5 rounded-full bg-green-400" />
+                Live · Just now
+              </div>
               <DashboardPreview />
             </div>
           </div>
@@ -183,71 +195,234 @@ export function Landing({ onEnter }: Props) {
 
       {/* ── Stats marquee ── */}
       <div className="py-5 overflow-hidden relative"
-        style={{ background: '#ccfbf1', borderTop: '1px solid #5eead4', borderBottom: '1px solid #5eead4' }}>
+        style={{ background: '#0C1825', borderTop: '1px solid rgba(255,255,255,0.06)', borderBottom: '1px solid rgba(255,255,255,0.06)' }}>
         <div className="absolute inset-y-0 left-0 w-20 z-10 pointer-events-none"
-          style={{ background: 'linear-gradient(90deg, #ccfbf1, transparent)' }} />
+          style={{ background: 'linear-gradient(90deg, #0C1825, transparent)' }} />
         <div className="absolute inset-y-0 right-0 w-20 z-10 pointer-events-none"
-          style={{ background: 'linear-gradient(270deg, #ccfbf1, transparent)' }} />
+          style={{ background: 'linear-gradient(270deg, #0C1825, transparent)' }} />
         <div className="animate-marquee flex gap-16 w-max">
           {[...stats, ...stats].map((s, i) => (
             <div key={i} className="flex items-baseline gap-2 flex-shrink-0">
-              <span className="font-extrabold" style={{ fontSize: '22px', color: '#0F766E', fontFamily: "'Bricolage Grotesque', system-ui, sans-serif" }}>
+              <span className="font-extrabold" style={{ fontSize: '22px', color: '#2dd4bf', fontFamily: "'Bricolage Grotesque', system-ui, sans-serif" }}>
                 {s.value}
               </span>
-              <span className="text-xs leading-tight" style={{ color: '#0d9488' }}>{s.label}</span>
+              <span className="text-xs leading-tight" style={{ color: 'rgba(255,255,255,0.4)' }}>{s.label}</span>
             </div>
           ))}
         </div>
       </div>
 
-      {/* ── Features ── */}
+      {/* ── Features: alternating full-width color-block strips ── */}
+      <div>
+        {[
+          {
+            tag: 'Detection', color: '#b45309', sectionBg: '#fffbeb', accentBg: '#fde68a',
+            title: 'See whose spark is fading',
+            desc: 'Dwell time, revisit rate, and exploration depth surface as passive behavioral signals — no quizzes, no interruptions to the learning flow.',
+            visual: (
+              <div className="rounded-2xl p-5 space-y-3" style={{ background: 'white', border: '1px solid #fde68a', boxShadow: '0 4px 24px rgba(180,83,9,0.08)' }}>
+                {[{ name: 'Amara U.', score: 38, color: '#ea580c' }, { name: 'Kofi M.', score: 22, color: '#dc2626' }, { name: 'Emmanuel R.', score: 58, color: '#d97706' }].map(s => (
+                  <div key={s.name} className="flex items-center gap-3">
+                    <p className="text-xs font-semibold w-24 flex-shrink-0" style={{ color: '#0C1825' }}>{s.name}</p>
+                    <div className="flex-1 h-2 rounded-full overflow-hidden" style={{ background: '#f1f5f9' }}>
+                      <div className="h-full rounded-full" style={{ width: `${s.score}%`, background: s.color }} />
+                    </div>
+                    <span className="text-xs font-extrabold w-7 text-right" style={{ color: s.color }}>{s.score}</span>
+                  </div>
+                ))}
+                <div className="mt-2 flex items-center gap-2 rounded-lg px-3 py-2" style={{ background: '#fff7ed', border: '1px solid #fed7aa' }}>
+                  <span className="text-xs font-semibold" style={{ color: '#c2410c' }}>⚠ 2 students fading on Fractions</span>
+                </div>
+              </div>
+            ),
+            reverse: false,
+          },
+          {
+            tag: 'Alerts', color: '#0F766E', sectionBg: '#f0fdfa', accentBg: '#ccfbf1',
+            title: 'Named students, not averages',
+            desc: "Know exactly which student is disengaging, on which topic, and since when — not a class-wide percentage that hides everyone.",
+            visual: (
+              <div className="rounded-2xl overflow-hidden" style={{ background: 'white', border: '1px solid #ccfbf1', boxShadow: '0 4px 24px rgba(15,118,110,0.08)' }}>
+                <div className="px-5 py-3 flex items-center justify-between" style={{ borderBottom: '1px solid #f0fdfa' }}>
+                  <span className="text-xs font-bold" style={{ color: '#0C1825' }}>Priority Alerts</span>
+                  <span className="text-xs font-semibold px-2 py-0.5 rounded-full" style={{ background: '#fff7ed', color: '#c2410c', border: '1px solid #fed7aa' }}>3 students</span>
+                </div>
+                {[
+                  { initials: 'AU', name: 'Amara U.', topic: 'Fractions', days: '3 days', color: '#ea580c' },
+                  { initials: 'KM', name: 'Kofi M.', topic: 'Algebra', days: '5 days', color: '#dc2626' },
+                  { initials: 'ER', name: 'Emmanuel R.', topic: 'Geometry', days: '1 day', color: '#d97706' },
+                ].map((s, i, arr) => (
+                  <div key={s.name} className="px-5 py-3 flex items-center gap-3" style={{ borderBottom: i < arr.length - 1 ? '1px solid #f8fafc' : 'none' }}>
+                    <div className="w-7 h-7 rounded-full flex items-center justify-center text-xs font-extrabold flex-shrink-0" style={{ background: '#f1f5f9', color: s.color }}>{s.initials}</div>
+                    <div className="flex-1 min-w-0">
+                      <p className="text-xs font-semibold" style={{ color: '#0C1825' }}>{s.name}</p>
+                      <p className="text-xs" style={{ color: '#94a3b8' }}>{s.topic}</p>
+                    </div>
+                    <span className="text-xs font-semibold" style={{ color: s.color }}>Fading · {s.days}</span>
+                  </div>
+                ))}
+              </div>
+            ),
+            reverse: true,
+          },
+          {
+            tag: 'History', color: '#15803d', sectionBg: '#f0fdf4', accentBg: '#bbf7d0',
+            title: 'Track curiosity over time',
+            desc: 'Session-by-session timelines with curiosity spikes and confusion markers — spot the pattern before it becomes a dropout risk.',
+            visual: (
+              <div className="rounded-2xl p-5" style={{ background: 'white', border: '1px solid #bbf7d0', boxShadow: '0 4px 24px rgba(21,128,61,0.08)' }}>
+                <p className="text-xs font-semibold mb-3" style={{ color: '#0C1825' }}>Nakato B. — last 8 sessions</p>
+                <div className="flex items-end gap-1.5 h-16">
+                  {[40, 55, 48, 70, 65, 82, 91, 88].map((v, i) => (
+                    <div key={i} className="flex-1 rounded-t-sm" style={{ height: `${v}%`, background: v >= 75 ? '#16a34a' : v >= 55 ? '#0F766E' : '#94a3b8', opacity: 0.85 }} />
+                  ))}
+                </div>
+                <div className="flex justify-between mt-2">
+                  {['W1','W2','W3','W4','W5','W6','W7','W8'].map(w => (
+                    <span key={w} className="text-xs flex-1 text-center" style={{ color: '#cbd5e1' }}>{w}</span>
+                  ))}
+                </div>
+                <div className="mt-3 flex items-center gap-2 rounded-lg px-3 py-2" style={{ background: '#f0fdf4', border: '1px solid #bbf7d0' }}>
+                  <TrendingUp className="w-3 h-3 flex-shrink-0" style={{ color: '#16a34a' }} />
+                  <span className="text-xs font-semibold" style={{ color: '#15803d' }}>Curiosity spike detected · W7–W8</span>
+                </div>
+              </div>
+            ),
+            reverse: false,
+          },
+        ].map(({ tag, color, sectionBg, accentBg, title, desc, visual, reverse }) => (
+          <div key={tag} className="relative overflow-hidden" style={{ background: sectionBg }}>
+            {/* Decorative corner circle */}
+            <div className="absolute pointer-events-none opacity-40"
+              style={{ width: 180, height: 180, borderRadius: '50%', background: accentBg,
+                ...(reverse ? { bottom: -40, left: -40 } : { top: -40, right: -40 }) }} />
+            <div className="relative max-w-6xl mx-auto px-6 sm:px-10 py-20">
+              <div className={`grid grid-cols-1 lg:grid-cols-2 gap-16 items-center ${reverse ? 'lg:[direction:rtl]' : ''}`}>
+                <div className={reverse ? 'lg:[direction:ltr]' : ''}>
+                  <span className="text-xs font-bold uppercase tracking-widest" style={{ color }}>{tag}</span>
+                  <h2 className="font-extrabold mt-3 mb-4 leading-tight"
+                    style={{ fontSize: 'clamp(26px,3.5vw,40px)', color: '#0C1825',
+                      fontFamily: "'Bricolage Grotesque', system-ui, sans-serif", letterSpacing: '-0.02em' }}>
+                    {title}
+                  </h2>
+                  <p className="text-base leading-relaxed" style={{ color: '#64748b' }}>{desc}</p>
+                </div>
+                <div className={reverse ? 'lg:[direction:ltr]' : ''}>{visual}</div>
+              </div>
+            </div>
+          </div>
+        ))}
+      </div>
+
+      {/* ── Signal toolkit 2×2 grid ── */}
       <section className="max-w-6xl mx-auto px-6 sm:px-10 py-24">
         <div className="text-center mb-14">
-          <p className="text-xs font-semibold uppercase tracking-widest mb-3" style={{ color: '#94a3b8' }}>How it works</p>
-          <h2 className="font-extrabold tracking-tight leading-tight"
-            style={{ fontSize: 'clamp(28px,4vw,44px)', color: '#0C1825', fontFamily: "'Bricolage Grotesque', system-ui, sans-serif" }}>
-            Data that helps teachers act,<br />not just observe.
+          <p className="text-xs font-semibold uppercase tracking-widest mb-3" style={{ color: '#94a3b8' }}>The signals</p>
+          <h2 className="font-extrabold tracking-tight"
+            style={{ fontSize: 'clamp(28px,4vw,44px)', color: '#0C1825',
+              fontFamily: "'Bricolage Grotesque', system-ui, sans-serif", letterSpacing: '-0.025em' }}>
+            Five signals. One score.<br />One clear action.
           </h2>
         </div>
-
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-5">
-          {features.map(({ icon, color, bg, border, tag, title, desc }, i) => (
-            <div
-              key={title}
-              className="rounded-2xl p-7 flex flex-col gap-4 animate-slide-up"
-              style={{
-                background: bg, border: `1px solid ${border}`,
-                boxShadow: '0 1px 3px rgba(0,0,0,0.03)',
-                animationDelay: `${i * 100}ms`,
-                transition: 'transform 0.5s cubic-bezier(0.19,1,0.22,1), box-shadow 0.5s cubic-bezier(0.19,1,0.22,1)',
+        <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
+          {[
+            { label: 'Dwell Time', sub: 'How long they linger on content', color: '#0F766E', bg: '#f0fdfa', border: '#ccfbf1', icon: <Eye className="w-5 h-5" /> },
+            { label: 'Revisit Rate', sub: 'Returning without being asked', color: '#b45309', bg: '#fffbeb', border: '#fde68a', icon: <BookOpen className="w-5 h-5" /> },
+            { label: 'Exploration Depth', sub: 'Following linked topics', color: '#7c3aed', bg: '#f5f3ff', border: '#ddd6fe', icon: <Zap className="w-5 h-5" /> },
+            { label: 'Response Latency', sub: 'Time to first answer', color: '#0369a1', bg: '#f0f9ff', border: '#bae6fd', icon: <BarChart2 className="w-5 h-5" /> },
+          ].map(({ label, sub, color, bg, border, icon }) => (
+            <div key={label} className="rounded-2xl p-6 flex flex-col gap-3"
+              style={{ background: bg, border: `1px solid ${border}`,
+                transition: 'transform 0.4s cubic-bezier(0.19,1,0.22,1)',
               }}
-              onMouseEnter={e => {
-                const el = e.currentTarget as HTMLDivElement
-                el.style.transform = 'translateY(-4px)'
-                el.style.boxShadow = '0 12px 40px rgba(0,0,0,0.08)'
-              }}
-              onMouseLeave={e => {
-                const el = e.currentTarget as HTMLDivElement
-                el.style.transform = 'translateY(0)'
-                el.style.boxShadow = '0 1px 3px rgba(0,0,0,0.03)'
-              }}
-            >
-              <div>
-                <div className="w-10 h-10 rounded-xl flex items-center justify-center mb-4"
-                  style={{ background: 'rgba(255,255,255,0.7)', border: `1px solid ${border}`, color }}>
-                  {icon}
-                </div>
-                <span className="text-xs font-bold uppercase tracking-widest" style={{ color }}>{tag}</span>
+              onMouseEnter={e => (e.currentTarget.style.transform = 'translateY(-4px)')}
+              onMouseLeave={e => (e.currentTarget.style.transform = 'translateY(0)')}>
+              <div className="w-10 h-10 rounded-xl flex items-center justify-center"
+                style={{ background: 'rgba(255,255,255,0.7)', border: `1px solid ${border}`, color }}>
+                {icon}
               </div>
               <div>
-                <h3 className="font-bold text-base mb-2 leading-snug"
-                  style={{ color: '#0C1825', fontFamily: "'Bricolage Grotesque', system-ui, sans-serif" }}>
-                  {title}
-                </h3>
-                <p className="text-sm leading-relaxed" style={{ color: '#64748b' }}>{desc}</p>
+                <p className="font-bold text-sm" style={{ color: '#0C1825', fontFamily: "'Bricolage Grotesque', system-ui, sans-serif" }}>{label}</p>
+                <p className="text-xs mt-1 leading-relaxed" style={{ color: '#64748b' }}>{sub}</p>
               </div>
             </div>
           ))}
+        </div>
+      </section>
+
+      {/* ── How it works: 3 steps ── */}
+      <section style={{ background: '#f8fafc', borderTop: '1px solid #f1f5f9', borderBottom: '1px solid #f1f5f9' }}
+        className="px-6 sm:px-10 py-24">
+        <div className="max-w-6xl mx-auto">
+          <div className="text-center mb-16">
+            <p className="text-xs font-semibold uppercase tracking-widest mb-3" style={{ color: '#94a3b8' }}>The process</p>
+            <h2 className="font-extrabold"
+              style={{ fontSize: 'clamp(28px,4vw,44px)', color: '#0C1825',
+                fontFamily: "'Bricolage Grotesque', system-ui, sans-serif", letterSpacing: '-0.025em' }}>
+              Three steps. Zero disruption.
+            </h2>
+          </div>
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-8 relative">
+            {/* Connector line (desktop only) */}
+            <div className="hidden md:block absolute top-8 left-1/6 right-1/6 h-px" style={{ background: 'linear-gradient(90deg, transparent, #e2e8f0 20%, #e2e8f0 80%, transparent)' }} />
+            {[
+              {
+                n: '01', color: '#0F766E', bg: '#f0fdfa',
+                title: 'Students learn naturally',
+                desc: 'Dwell time, revisits, exploration depth, and response latency are passively collected — no quizzes, no interruptions.',
+              },
+              {
+                n: '02', color: '#d97706', bg: '#fffbeb',
+                title: 'Reflection detects patterns',
+                desc: 'Five behavioral signals are combined into a curiosity score per student, per topic, updated each session.',
+              },
+              {
+                n: '03', color: '#dc2626', bg: '#fef2f2',
+                title: 'Teacher gets a named alert',
+                desc: 'Not "25% of the class is struggling." Exactly which student, on which topic, and for how many days.',
+              },
+            ].map(({ n, color, bg, title, desc }) => (
+              <div key={n} className="flex flex-col gap-4">
+                <div className="w-14 h-14 rounded-2xl flex items-center justify-center font-extrabold text-lg flex-shrink-0"
+                  style={{ background: bg, color, fontFamily: "'Bricolage Grotesque', system-ui, sans-serif", border: `1px solid ${bg === '#f0fdfa' ? '#ccfbf1' : bg === '#fffbeb' ? '#fde68a' : '#fecaca'}` }}>
+                  {n}
+                </div>
+                <div>
+                  <h3 className="font-bold text-base mb-1.5 leading-snug"
+                    style={{ color: '#0C1825', fontFamily: "'Bricolage Grotesque', system-ui, sans-serif" }}>
+                    {title}
+                  </h3>
+                  <p className="text-sm leading-relaxed" style={{ color: '#64748b' }}>{desc}</p>
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      {/* ── Social proof quote ── */}
+      <section className="max-w-6xl mx-auto px-6 sm:px-10 py-20">
+        <div className="rounded-3xl p-10 md:p-14 relative overflow-hidden"
+          style={{ background: '#f0fdfa', border: '1px solid #ccfbf1' }}>
+          <div className="absolute top-0 right-0 w-48 h-48 rounded-full opacity-20 pointer-events-none"
+            style={{ background: 'radial-gradient(circle, #0F766E 0%, transparent 70%)', transform: 'translate(30%, -30%)' }} />
+          <div className="relative max-w-2xl">
+            <p className="text-3xl font-extrabold leading-snug mb-6"
+              style={{ color: '#0C1825', fontFamily: "'Bricolage Grotesque', system-ui, sans-serif" }}>
+              "I have 58 students. By the time I notice one is lost, they've already given up."
+            </p>
+            <p className="text-sm mb-6" style={{ color: '#0d9488' }}>
+              Reflection was built because of that sentence.
+            </p>
+            <div className="flex items-center gap-3">
+              <div className="w-9 h-9 rounded-full flex items-center justify-center text-xs font-extrabold flex-shrink-0"
+                style={{ background: '#0F766E', color: 'white' }}>MT</div>
+              <div>
+                <p className="text-sm font-semibold" style={{ color: '#0C1825' }}>Mr. Tuyishime</p>
+                <p className="text-xs" style={{ color: '#94a3b8' }}>Mathematics teacher · Kigali, Rwanda</p>
+              </div>
+            </div>
+          </div>
         </div>
       </section>
 
