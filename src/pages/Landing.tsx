@@ -1,5 +1,5 @@
 import { memo } from 'react'
-import { Sparkles, Zap, Users, TrendingUp, ArrowRight, ShieldCheck } from 'lucide-react'
+import { Sparkles, Zap, Users, TrendingUp, ArrowRight, ShieldCheck, GraduationCap, BookOpen, BarChart2, Bell, Eye, Lightbulb, Twitter, Github, Mail } from 'lucide-react'
 
 interface Props {
   onEnter: () => void
@@ -251,35 +251,240 @@ export function Landing({ onEnter }: Props) {
         </div>
       </section>
 
-      {/* ── CTA banner ── */}
-      <section className="py-20 px-6 sm:px-10" style={{ background: '#0C1825' }}>
-        <div className="max-w-2xl mx-auto text-center">
-          <h2 className="font-extrabold text-white leading-tight mb-4"
-            style={{ fontSize: 'clamp(26px,4vw,42px)', fontFamily: "'Bricolage Grotesque', system-ui, sans-serif" }}>
-            Ready to see your classroom differently?
-          </h2>
-          <p className="mb-8 text-base" style={{ color: 'rgba(255,255,255,0.45)' }}>
-            Open the dashboard and see engagement patterns for 12 students — no sign-up needed.
-          </p>
-          <button onClick={onEnter} className="btn-warm">
-            Open dashboard
-            <ArrowRight className="w-4 h-4" />
-          </button>
+      {/* ── For Students / For Teachers ── */}
+      <section style={{ background: '#0C1825' }} className="px-6 sm:px-10 pt-24 pb-0">
+        <div className="max-w-6xl mx-auto">
+          <div className="text-center mb-16">
+            <p className="text-xs font-semibold uppercase tracking-widest mb-3" style={{ color: 'rgba(255,255,255,0.3)' }}>
+              Who it's for
+            </p>
+            <h2 className="font-extrabold text-white leading-tight"
+              style={{ fontSize: 'clamp(28px,4vw,44px)', fontFamily: "'Bricolage Grotesque', system-ui, sans-serif" }}>
+              One classroom. Two perspectives.
+            </h2>
+          </div>
+
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6 pb-16" style={{ borderBottom: '1px solid rgba(255,255,255,0.07)' }}>
+
+            {/* For Teachers */}
+            <div className="rounded-2xl p-8 flex flex-col gap-6"
+              style={{ background: 'rgba(255,255,255,0.04)', border: '1px solid rgba(255,255,255,0.08)' }}>
+              <div>
+                <div className="w-11 h-11 rounded-xl flex items-center justify-center mb-4"
+                  style={{ background: '#0F766E' }}>
+                  <GraduationCap className="w-5 h-5 text-white" />
+                </div>
+                <span className="text-xs font-bold uppercase tracking-widest" style={{ color: '#0F766E' }}>For Teachers</span>
+                <h3 className="text-xl font-extrabold text-white mt-2 leading-snug"
+                  style={{ fontFamily: "'Bricolage Grotesque', system-ui, sans-serif" }}>
+                  Know every student by name,<br />not by average.
+                </h3>
+              </div>
+              <ul className="space-y-4">
+                {[
+                  { icon: <Bell className="w-4 h-4" />, text: 'Priority alerts when a student\'s spark starts fading' },
+                  { icon: <BarChart2 className="w-4 h-4" />, text: 'Per-student engagement timelines across sessions' },
+                  { icon: <Eye className="w-4 h-4" />, text: 'Behavioral signals — not grades, not guesses' },
+                  { icon: <Users className="w-4 h-4" />, text: 'See all 60 students at once, act on the right 3' },
+                ].map(({ icon, text }) => (
+                  <li key={text} className="flex items-start gap-3">
+                    <div className="w-7 h-7 rounded-lg flex items-center justify-center flex-shrink-0 mt-0.5"
+                      style={{ background: 'rgba(15,118,110,0.15)', color: '#2dd4bf' }}>
+                      {icon}
+                    </div>
+                    <p className="text-sm leading-relaxed" style={{ color: 'rgba(255,255,255,0.65)' }}>{text}</p>
+                  </li>
+                ))}
+              </ul>
+              <button onClick={onEnter} className="btn-primary mt-auto" style={{ alignSelf: 'flex-start' }}>
+                Open classroom dashboard
+                <ArrowRight className="w-4 h-4" />
+              </button>
+            </div>
+
+            {/* For Students */}
+            <div className="rounded-2xl p-8 flex flex-col gap-6"
+              style={{ background: 'rgba(255,255,255,0.04)', border: '1px solid rgba(255,255,255,0.08)' }}>
+              <div>
+                <div className="w-11 h-11 rounded-xl flex items-center justify-center mb-4"
+                  style={{ background: '#f97316' }}>
+                  <Lightbulb className="w-5 h-5 text-white" />
+                </div>
+                <span className="text-xs font-bold uppercase tracking-widest" style={{ color: '#f97316' }}>For Students</span>
+                <h3 className="text-xl font-extrabold text-white mt-2 leading-snug"
+                  style={{ fontFamily: "'Bricolage Grotesque', system-ui, sans-serif" }}>
+                  Your curiosity shapes<br />how you're taught.
+                </h3>
+              </div>
+              <ul className="space-y-4">
+                {[
+                  { icon: <Lightbulb className="w-4 h-4" />, text: 'Your natural exploration patterns guide your learning path' },
+                  { icon: <BookOpen className="w-4 h-4" />, text: 'Teachers know when you\'re confused — before you fall behind' },
+                  { icon: <TrendingUp className="w-4 h-4" />, text: 'Curiosity spikes get recognized, not just test scores' },
+                  { icon: <ShieldCheck className="w-4 h-4" />, text: 'No data leaves the classroom — privacy-first by design' },
+                ].map(({ icon, text }) => (
+                  <li key={text} className="flex items-start gap-3">
+                    <div className="w-7 h-7 rounded-lg flex items-center justify-center flex-shrink-0 mt-0.5"
+                      style={{ background: 'rgba(249,115,22,0.15)', color: '#fb923c' }}>
+                      {icon}
+                    </div>
+                    <p className="text-sm leading-relaxed" style={{ color: 'rgba(255,255,255,0.65)' }}>{text}</p>
+                  </li>
+                ))}
+              </ul>
+              <div className="mt-auto flex items-center gap-2 rounded-xl px-4 py-3"
+                style={{ background: 'rgba(249,115,22,0.08)', border: '1px solid rgba(249,115,22,0.2)' }}>
+                <span className="w-1.5 h-1.5 rounded-full bg-orange-400 flex-shrink-0" />
+                <p className="text-xs" style={{ color: 'rgba(255,255,255,0.5)' }}>
+                  No account needed · Works offline · Kinyarwanda-ready
+                </p>
+              </div>
+            </div>
+          </div>
+
+          {/* ── CTA inside dark section ── */}
+          <div className="py-20 text-center">
+            <h2 className="font-extrabold text-white leading-tight mb-4"
+              style={{ fontSize: 'clamp(26px,4vw,42px)', fontFamily: "'Bricolage Grotesque', system-ui, sans-serif" }}>
+              Ready to see your classroom differently?
+            </h2>
+            <p className="mb-8 text-base" style={{ color: 'rgba(255,255,255,0.45)' }}>
+              Open the dashboard and see engagement patterns for 12 students — no sign-up needed.
+            </p>
+            <button onClick={onEnter} className="btn-warm">
+              Open dashboard
+              <ArrowRight className="w-4 h-4" />
+            </button>
+          </div>
         </div>
       </section>
 
       {/* ── Footer ── */}
-      <footer className="py-7 px-6 sm:px-10 flex items-center justify-between max-w-6xl mx-auto"
-        style={{ borderTop: '1px solid #e2e8f0' }}>
-        <div className="flex items-center gap-2">
-          <div className="w-6 h-6 rounded-md flex items-center justify-center" style={{ background: '#0F766E' }}>
-            <Sparkles className="w-3 h-3 text-white" />
+      <footer style={{ background: '#0a1118', borderTop: '1px solid rgba(255,255,255,0.06)' }}>
+        <div className="max-w-6xl mx-auto px-6 sm:px-10 pt-14 pb-8">
+
+          {/* Top: brand + columns */}
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-10 pb-12" style={{ borderBottom: '1px solid rgba(255,255,255,0.06)' }}>
+
+            {/* Brand */}
+            <div className="col-span-2 md:col-span-1">
+              <div className="flex items-center gap-2 mb-4">
+                <div className="w-7 h-7 rounded-lg flex items-center justify-center" style={{ background: '#0F766E' }}>
+                  <Sparkles className="w-3.5 h-3.5 text-white" />
+                </div>
+                <span className="font-extrabold text-white text-sm"
+                  style={{ fontFamily: "'Bricolage Grotesque', system-ui, sans-serif" }}>
+                  Reflection
+                </span>
+              </div>
+              <p className="text-xs leading-relaxed mb-6" style={{ color: 'rgba(255,255,255,0.35)', maxWidth: '200px' }}>
+                Curiosity detection for classrooms where every spark matters.
+              </p>
+              <div className="flex items-center gap-3">
+                {[
+                  { icon: <Twitter className="w-3.5 h-3.5" />, label: 'Twitter' },
+                  { icon: <Github className="w-3.5 h-3.5" />, label: 'GitHub' },
+                  { icon: <Mail className="w-3.5 h-3.5" />, label: 'Email' },
+                ].map(({ icon, label }) => (
+                  <button key={label} aria-label={label}
+                    className="w-8 h-8 rounded-lg flex items-center justify-center"
+                    style={{
+                      background: 'rgba(255,255,255,0.05)',
+                      border: '1px solid rgba(255,255,255,0.08)',
+                      color: 'rgba(255,255,255,0.4)',
+                      cursor: 'pointer',
+                      transition: 'background 0.3s, color 0.3s',
+                    }}
+                    onMouseEnter={e => {
+                      const el = e.currentTarget as HTMLButtonElement
+                      el.style.background = 'rgba(255,255,255,0.1)'
+                      el.style.color = 'rgba(255,255,255,0.9)'
+                    }}
+                    onMouseLeave={e => {
+                      const el = e.currentTarget as HTMLButtonElement
+                      el.style.background = 'rgba(255,255,255,0.05)'
+                      el.style.color = 'rgba(255,255,255,0.4)'
+                    }}
+                  >
+                    {icon}
+                  </button>
+                ))}
+              </div>
+            </div>
+
+            {/* For Teachers */}
+            <div>
+              <p className="text-xs font-bold uppercase tracking-widest mb-4" style={{ color: '#2dd4bf' }}>For Teachers</p>
+              <ul className="space-y-3">
+                {['Class Overview', 'Student Alerts', 'Engagement History', 'Behavioral Signals', 'Topic Tracking'].map(item => (
+                  <li key={item}>
+                    <button className="text-xs text-left"
+                      style={{ color: 'rgba(255,255,255,0.45)', background: 'none', border: 'none', cursor: 'pointer',
+                        transition: 'color 0.25s' }}
+                      onMouseEnter={e => (e.currentTarget.style.color = 'rgba(255,255,255,0.85)')}
+                      onMouseLeave={e => (e.currentTarget.style.color = 'rgba(255,255,255,0.45)')}>
+                      {item}
+                    </button>
+                  </li>
+                ))}
+              </ul>
+            </div>
+
+            {/* For Students */}
+            <div>
+              <p className="text-xs font-bold uppercase tracking-widest mb-4" style={{ color: '#fb923c' }}>For Students</p>
+              <ul className="space-y-3">
+                {['Curiosity Signals', 'Session Timeline', 'Learning Path', 'Confusion Detection', 'Privacy & Data'].map(item => (
+                  <li key={item}>
+                    <button className="text-xs text-left"
+                      style={{ color: 'rgba(255,255,255,0.45)', background: 'none', border: 'none', cursor: 'pointer',
+                        transition: 'color 0.25s' }}
+                      onMouseEnter={e => (e.currentTarget.style.color = 'rgba(255,255,255,0.85)')}
+                      onMouseLeave={e => (e.currentTarget.style.color = 'rgba(255,255,255,0.45)')}>
+                      {item}
+                    </button>
+                  </li>
+                ))}
+              </ul>
+            </div>
+
+            {/* Project */}
+            <div>
+              <p className="text-xs font-bold uppercase tracking-widest mb-4" style={{ color: 'rgba(255,255,255,0.3)' }}>Project</p>
+              <ul className="space-y-3">
+                {['About', 'Research', 'Open Source', 'Contact'].map(item => (
+                  <li key={item}>
+                    <button className="text-xs text-left"
+                      style={{ color: 'rgba(255,255,255,0.45)', background: 'none', border: 'none', cursor: 'pointer',
+                        transition: 'color 0.25s' }}
+                      onMouseEnter={e => (e.currentTarget.style.color = 'rgba(255,255,255,0.85)')}
+                      onMouseLeave={e => (e.currentTarget.style.color = 'rgba(255,255,255,0.45)')}>
+                      {item}
+                    </button>
+                  </li>
+                ))}
+              </ul>
+            </div>
           </div>
-          <span className="text-xs font-bold" style={{ color: '#0C1825', fontFamily: "'Bricolage Grotesque', system-ui, sans-serif" }}>
-            Reflection
-          </span>
+
+          {/* Bottom bar */}
+          <div className="pt-7 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3">
+            <p className="text-xs" style={{ color: 'rgba(255,255,255,0.2)' }}>
+              © 2026 Reflection. Built for classrooms where every spark matters.
+            </p>
+            <div className="flex items-center gap-5">
+              {['Privacy', 'Terms', 'Accessibility'].map(item => (
+                <button key={item} className="text-xs"
+                  style={{ color: 'rgba(255,255,255,0.25)', background: 'none', border: 'none', cursor: 'pointer',
+                    transition: 'color 0.25s' }}
+                  onMouseEnter={e => (e.currentTarget.style.color = 'rgba(255,255,255,0.6)')}
+                  onMouseLeave={e => (e.currentTarget.style.color = 'rgba(255,255,255,0.25)')}>
+                  {item}
+                </button>
+              ))}
+            </div>
+          </div>
         </div>
-        <p className="text-xs" style={{ color: '#94a3b8' }}>Built for classrooms where every spark matters</p>
       </footer>
     </div>
   )
