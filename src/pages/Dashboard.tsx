@@ -44,7 +44,7 @@ export function Dashboard({ onStudentSelect }: Props) {
 
   return (
     <div style={{ background: '#FAFAF5', minHeight: '100vh' }}>
-      <Header stats={CLASS_STATS} />
+      <Header stats={CLASS_STATS} onBack="true"/>
 
       <main className="max-w-5xl mx-auto px-4 sm:px-6 py-10 space-y-10 animate-fade-in">
 
