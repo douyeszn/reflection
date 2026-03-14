@@ -104,10 +104,14 @@ export function Landing({ onEnter, onEnterClassroom }: Props) {
           </div>
 
           <div className="hidden md:flex items-center gap-7">
-            {['How it works', 'For Teachers', 'For Students'].map(label => (
+            {[
+              { label: 'How it works', id: 'how-it-works' },
+              { label: 'For Teachers', id: 'for-teachers' },
+              { label: 'For Students', id: 'for-students' },
+            ].map(({ label, id }) => (
               <button key={label} className="text-sm font-medium"
-                style={{ color: '#64748b', background: 'none', border: 'none', cursor: 'pointer',
-                  transition: 'color 0.25s' }}
+                style={{ color: '#64748b', background: 'none', border: 'none', cursor: 'pointer', transition: 'color 0.25s' }}
+                onClick={() => document.getElementById(id)?.scrollIntoView({ behavior: 'smooth', block: 'start' })}
                 onMouseEnter={e => (e.currentTarget.style.color = '#0C1825')}
                 onMouseLeave={e => (e.currentTarget.style.color = '#64748b')}>
                 {label}
@@ -353,7 +357,7 @@ export function Landing({ onEnter, onEnterClassroom }: Props) {
       </section>
 
       {/* ── How it works: 3 steps ── */}
-      <section style={{ background: '#f8fafc', borderTop: '1px solid #f1f5f9', borderBottom: '1px solid #f1f5f9' }}
+      <section id="how-it-works" style={{ background: '#f8fafc', borderTop: '1px solid #f1f5f9', borderBottom: '1px solid #f1f5f9' }}
         className="px-6 sm:px-10 py-24">
         <div className="max-w-6xl mx-auto">
           <div className="text-center mb-16">
@@ -429,7 +433,7 @@ export function Landing({ onEnter, onEnterClassroom }: Props) {
       </section>
 
       {/* ── For Students / For Teachers ── */}
-      <section style={{ background: '#0C1825' }} className="px-6 sm:px-10 pt-24 pb-0">
+      <section id="for-teachers" style={{ background: '#0C1825' }} className="px-6 sm:px-10 pt-24 pb-0">
         <div className="max-w-6xl mx-auto">
           <div className="text-center mb-16">
             <p className="text-xs font-semibold uppercase tracking-widest mb-3" style={{ color: 'rgba(255,255,255,0.3)' }}>
@@ -474,13 +478,13 @@ export function Landing({ onEnter, onEnterClassroom }: Props) {
                 ))}
               </ul>
               <button onClick={onEnter} className="btn-primary mt-auto" style={{ alignSelf: 'flex-start' }}>
-                Open classroom dashboard
+                Sign in as teacher
                 <ArrowRight className="w-4 h-4" />
               </button>
             </div>
 
             {/* For Students */}
-            <div className="rounded-2xl p-8 flex flex-col gap-6"
+            <div id="for-students" className="rounded-2xl p-8 flex flex-col gap-6"
               style={{ background: 'rgba(255,255,255,0.04)', border: '1px solid rgba(255,255,255,0.08)' }}>
               <div>
                 <div className="w-11 h-11 rounded-xl flex items-center justify-center mb-4"
