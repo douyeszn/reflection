@@ -1,4 +1,4 @@
-import { TrendingDown, TrendingUp, Minus, AlertTriangle, BookOpen } from 'lucide-react'
+import { TrendingDown, TrendingUp, Minus, AlertTriangle, BookOpen, Phone } from 'lucide-react'
 import type { Student } from '../types'
 import { EngagementBadge } from './EngagementBadge'
 import { ScoreRing } from './ScoreRing'
@@ -6,6 +6,7 @@ import { ScoreRing } from './ScoreRing'
 interface Props {
   student: Student
   onClick: (id: string) => void
+  contacted?: boolean
 }
 
 const trendIcon = {
@@ -21,7 +22,7 @@ const avatarStyles: Record<Student['status'], { bg: string; color: string }> = {
   disengaged: { bg: '#f1f5f9', color: '#dc2626' },
 }
 
-export function StudentCard({ student, onClick }: Props) {
+export function StudentCard({ student, onClick, contacted = false }: Props) {
   const hasAlert = student.alertMessage !== null
   const av = avatarStyles[student.status]
 
@@ -31,7 +32,9 @@ export function StudentCard({ student, onClick }: Props) {
       className="w-full text-left rounded-2xl p-5"
       style={{
         background: 'white',
-        border: hasAlert ? '1px solid #fed7aa' : '1px solid #f1f5f9',
+        border: contacted
+          ? '1px solid #bbf7d0'
+          : hasAlert ? '1px solid #fed7aa' : '1px solid #f1f5f9',
         boxShadow: hasAlert
           ? '0 1px 3px rgba(234,88,12,0.06), 0 4px 16px rgba(234,88,12,0.05)'
           : '0 1px 2px rgba(0,0,0,0.03), 0 4px 12px rgba(15,118,110,0.04)',
@@ -42,7 +45,7 @@ export function StudentCard({ student, onClick }: Props) {
         const el = e.currentTarget as HTMLButtonElement
         el.style.transform = 'translateY(-3px)'
         el.style.boxShadow = '0 8px 32px rgba(15,118,110,0.10), 0 2px 8px rgba(0,0,0,0.05)'
-        if (!hasAlert) el.style.borderColor = '#ccfbf1'
+        if (!hasAlert && !contacted) el.style.borderColor = '#ccfbf1'
       }}
       onMouseLeave={e => {
         const el = e.currentTarget as HTMLButtonElement
@@ -50,13 +53,24 @@ export function StudentCard({ student, onClick }: Props) {
         el.style.boxShadow = hasAlert
           ? '0 1px 3px rgba(234,88,12,0.06), 0 4px 16px rgba(234,88,12,0.05)'
           : '0 1px 2px rgba(0,0,0,0.03), 0 4px 12px rgba(15,118,110,0.04)'
-        el.style.borderColor = hasAlert ? '#fed7aa' : '#f1f5f9'
+        el.style.borderColor = contacted ? '#bbf7d0' : hasAlert ? '#fed7aa' : '#f1f5f9'
       }}
     >
-      {hasAlert && (
+      {/* Alert / contacted header row */}
+      {(hasAlert || contacted) && (
         <div className="flex items-center gap-1.5 mb-3">
-          <AlertTriangle className="w-3.5 h-3.5 flex-shrink-0" style={{ color: '#ea580c' }} />
-          <span className="text-xs font-semibold" style={{ color: '#ea580c' }}>Needs attention</span>
+          {contacted && (
+            <span className="flex items-center gap-1 text-xs font-semibold px-2 py-0.5 rounded-full"
+              style={{ background: '#f0fdf4', color: '#15803d', border: '1px solid #bbf7d0' }}>
+              <Phone className="w-2.5 h-2.5" /> Contacted
+            </span>
+          )}
+          {hasAlert && !contacted && (
+            <>
+              <AlertTriangle className="w-3.5 h-3.5 flex-shrink-0" style={{ color: '#ea580c' }} />
+              <span className="text-xs font-semibold" style={{ color: '#ea580c' }}>Needs attention</span>
+            </>
+          )}
         </div>
       )}
 
@@ -87,10 +101,9 @@ export function StudentCard({ student, onClick }: Props) {
         )}
       </div>
 
-      {/* Score bar */}
       <div className="mt-3.5 h-1 rounded-full overflow-hidden" style={{ background: '#f1f5f9' }}>
         <div className="h-full rounded-full"
-          style={{ width: `${student.score}%`, background: av.color, transition: 'width 0.8s cubic-bezier(0.19,1,0.22,1)' }} />
+          style={{ width: `${student.score}%`, background: contacted ? '#16a34a' : av.color, transition: 'width 0.8s cubic-bezier(0.19,1,0.22,1)' }} />
       </div>
     </button>
   )

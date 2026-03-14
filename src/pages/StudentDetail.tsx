@@ -1,4 +1,5 @@
-import { Clock, BookOpen, RefreshCw, Zap, Target, Eye } from 'lucide-react'
+import { useState } from 'react'
+import { Clock, BookOpen, RefreshCw, Zap, Target, Eye, StickyNote, Send } from 'lucide-react'
 import { Header } from '../components/Header'
 import { EngagementBadge } from '../components/EngagementBadge'
 import { ScoreRing } from '../components/ScoreRing'
@@ -68,10 +69,36 @@ const cardStyle = {
   boxShadow: '0 1px 2px rgba(0,0,0,0.03), 0 4px 12px rgba(15,118,110,0.04)',
 }
 
+interface Note { text: string; ts: string }
+
+function useNotes(studentId: string) {
+  const key = `reflection-notes-${studentId}`
+  const [notes, setNotes] = useState<Note[]>(() => {
+    try { return JSON.parse(localStorage.getItem(key) ?? '[]') } catch { return [] }
+  })
+  const [draft, setDraft] = useState('')
+
+  function save() {
+    const trimmed = draft.trim()
+    if (!trimmed) return
+    const note: Note = {
+      text: trimmed,
+      ts: new Date().toLocaleString('en-US', { month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit' }),
+    }
+    const updated = [note, ...notes]
+    setNotes(updated)
+    localStorage.setItem(key, JSON.stringify(updated))
+    setDraft('')
+  }
+
+  return { notes, draft, setDraft, save }
+}
+
 export function StudentDetail({ studentId, onBack }: Props) {
   const student = STUDENTS.find(s => s.id === studentId)
   if (!student) return null
 
+  const { notes, draft, setDraft, save } = useNotes(studentId)
   const avgDwell   = (student.signals.dwellTime   / 1000).toFixed(1)
   const avgLatency = (student.signals.responseLatency / 1000).toFixed(1)
   const accuracy   = Math.round(student.signals.errorRateTrend * 100)
@@ -170,6 +197,67 @@ export function StudentDetail({ studentId, onBack }: Props) {
               </div>
             )
           })}
+        </div>
+
+        {/* Teacher notes */}
+        <div style={cardStyle} className="p-6">
+          <div className="flex items-center gap-2 mb-4">
+            <StickyNote className="w-4 h-4" style={{ color: '#94a3b8' }} />
+            <h2 className="text-base font-bold" style={{ color: '#0C1825', fontFamily: "'Bricolage Grotesque', system-ui, sans-serif" }}>
+              Teacher Notes
+            </h2>
+            {notes.length > 0 && (
+              <span className="ml-auto text-xs font-semibold px-2 py-0.5 rounded-full"
+                style={{ background: '#f1f5f9', color: '#64748b' }}>{notes.length}</span>
+            )}
+          </div>
+
+          {/* Input */}
+          <div className="flex gap-2 mb-4">
+            <textarea
+              value={draft}
+              onChange={e => setDraft(e.target.value)}
+              onKeyDown={e => { if (e.key === 'Enter' && (e.metaKey || e.ctrlKey)) save() }}
+              placeholder={`Add an observation about ${student.name.split(' ')[0]}…`}
+              rows={2}
+              className="flex-1 text-sm rounded-xl px-3 py-2.5 resize-none outline-none"
+              style={{
+                border: '1px solid #e2e8f0', color: '#0C1825', background: '#fafafa',
+                transition: 'border-color 0.3s, box-shadow 0.3s',
+              }}
+              onFocus={e => { e.currentTarget.style.borderColor = '#0F766E'; e.currentTarget.style.boxShadow = '0 0 0 3px rgba(15,118,110,0.08)' }}
+              onBlur={e => { e.currentTarget.style.borderColor = '#e2e8f0'; e.currentTarget.style.boxShadow = 'none' }}
+            />
+            <button
+              onClick={save}
+              disabled={!draft.trim()}
+              className="flex items-center justify-center w-10 h-10 rounded-xl flex-shrink-0 self-end"
+              style={{
+                background: draft.trim() ? '#0F766E' : '#f1f5f9',
+                color: draft.trim() ? 'white' : '#cbd5e1',
+                border: 'none', cursor: draft.trim() ? 'pointer' : 'not-allowed',
+                transition: 'all 0.3s cubic-bezier(0.19,1,0.22,1)',
+              }}>
+              <Send className="w-4 h-4" />
+            </button>
+          </div>
+
+          {/* Saved notes */}
+          {notes.length === 0 ? (
+            <p className="text-xs text-center py-4" style={{ color: '#cbd5e1' }}>
+              No notes yet. Use ⌘↵ to save quickly.
+            </p>
+          ) : (
+            <div className="space-y-2.5">
+              {notes.map((note, i) => (
+                <div key={i} className="rounded-xl px-4 py-3"
+                  style={{ background: '#f8fafc', border: '1px solid #f1f5f9' }}>
+                  <p className="text-sm leading-relaxed" style={{ color: '#334155' }}>{note.text}</p>
+                  <p className="text-xs mt-1.5" style={{ color: '#94a3b8' }}>{note.ts}</p>
+                </div>
+              ))}
+            </div>
+          )}
         </div>
 
       </main>

@@ -5,22 +5,15 @@ import type { Student } from '../types'
 interface Props {
   students: Student[]
   onStudentClick: (id: string) => void
+  contacted: Set<string>
+  onContact: (id: string) => void
 }
 
-export function AlertBanner({ students, onStudentClick }: Props) {
+export function AlertBanner({ students, onStudentClick, contacted, onContact }: Props) {
   const [dismissed, setDismissed] = useState<Set<string>>(new Set())
-  const [contacted, setContacted] = useState<Set<string>>(new Set())
 
   const alerts = students.filter(s => s.alertMessage && !dismissed.has(s.id))
   if (alerts.length === 0) return null
-
-  function toggleContacted(id: string) {
-    setContacted(prev => {
-      const next = new Set(prev)
-      if (next.has(id)) next.delete(id); else next.add(id)
-      return next
-    })
-  }
 
   return (
     <div className="space-y-2.5 animate-slide-up">
@@ -39,18 +32,13 @@ export function AlertBanner({ students, onStudentClick }: Props) {
               transition: 'border-color 0.4s cubic-bezier(0.19,1,0.22,1)',
             }}
           >
-            {/* Icon */}
             <div className="w-8 h-8 rounded-xl flex items-center justify-center flex-shrink-0 mt-0.5"
-              style={{
-                background: isContacted ? '#f0fdf4' : isCritical ? '#fef2f2' : '#fff7ed',
-                transition: 'background 0.4s',
-              }}>
+              style={{ background: isContacted ? '#f0fdf4' : isCritical ? '#fef2f2' : '#fff7ed', transition: 'background 0.4s' }}>
               {isContacted
                 ? <CheckCircle className="w-4 h-4" style={{ color: '#16a34a' }} />
                 : <AlertTriangle className="w-4 h-4" style={{ color: isCritical ? '#dc2626' : '#ea580c' }} />}
             </div>
 
-            {/* Content */}
             <div className="flex-1 min-w-0">
               <div className="flex items-center gap-2 flex-wrap mb-0.5">
                 <button
@@ -73,10 +61,9 @@ export function AlertBanner({ students, onStudentClick }: Props) {
                 {student.alertMessage}
               </p>
 
-              {/* Action buttons */}
               <div className="flex items-center gap-2 mt-3">
                 <button
-                  onClick={() => toggleContacted(student.id)}
+                  onClick={() => onContact(student.id)}
                   className="flex items-center gap-1.5 text-xs font-semibold rounded-lg px-3 py-1.5"
                   style={{
                     background: isContacted ? '#f0fdf4' : '#f8fafc',
@@ -92,20 +79,13 @@ export function AlertBanner({ students, onStudentClick }: Props) {
                 <button
                   onClick={() => setDismissed(prev => new Set([...prev, student.id]))}
                   className="flex items-center gap-1.5 text-xs font-semibold rounded-lg px-3 py-1.5"
-                  style={{
-                    background: '#f8fafc',
-                    border: '1px solid #e2e8f0',
-                    color: '#64748b',
-                    cursor: 'pointer',
-                    transition: 'all 0.3s',
-                  }}>
+                  style={{ background: '#f8fafc', border: '1px solid #e2e8f0', color: '#64748b', cursor: 'pointer', transition: 'all 0.3s' }}>
                   <CheckCircle className="w-3 h-3" />
                   Resolved
                 </button>
               </div>
             </div>
 
-            {/* Dismiss X */}
             <button
               onClick={() => setDismissed(prev => new Set([...prev, student.id]))}
               className="btn-ghost flex-shrink-0 mt-0.5"
