@@ -3,6 +3,7 @@ import { Sparkles, Zap, Users, TrendingUp, ArrowRight, ShieldCheck, GraduationCa
 
 interface Props {
   onEnter: () => void
+  onEnterClassroom: () => void
 }
 
 const stats = [
@@ -85,7 +86,7 @@ const DashboardPreview = memo(function DashboardPreview() {
   )
 })
 
-export function Landing({ onEnter }: Props) {
+export function Landing({ onEnter, onEnterClassroom }: Props) {
   return (
     <div style={{ background: '#FAFAF5', color: '#0C1825' }}>
 
@@ -156,8 +157,9 @@ export function Landing({ onEnter }: Props) {
                   Open classroom dashboard
                   <ArrowRight className="w-4 h-4" />
                 </button>
-                <button className="btn-secondary">
-                  See how it works
+                <button onClick={onEnterClassroom} className="btn-secondary">
+                  <GraduationCap className="w-4 h-4" />
+                  Student view
                 </button>
               </div>
 
@@ -507,7 +509,14 @@ export function Landing({ onEnter }: Props) {
                   </li>
                 ))}
               </ul>
-              <div className="mt-auto flex items-center gap-2 rounded-xl px-4 py-3"
+              <button onClick={onEnterClassroom}
+                className="flex items-center justify-center gap-2 w-full rounded-xl py-3 text-sm font-bold"
+                style={{ background: '#f97316', color: 'white', border: 'none', cursor: 'pointer', transition: 'all 0.25s' }}
+                onMouseEnter={e => (e.currentTarget.style.background = '#ea580c')}
+                onMouseLeave={e => (e.currentTarget.style.background = '#f97316')}>
+                <GraduationCap className="w-4 h-4" /> Try student view
+              </button>
+              <div className="flex items-center gap-2 rounded-xl px-4 py-3"
                 style={{ background: 'rgba(249,115,22,0.08)', border: '1px solid rgba(249,115,22,0.2)' }}>
                 <span className="w-1.5 h-1.5 rounded-full bg-orange-400 flex-shrink-0" />
                 <p className="text-xs" style={{ color: 'rgba(255,255,255,0.5)' }}>
