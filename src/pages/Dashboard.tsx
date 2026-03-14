@@ -1,12 +1,16 @@
-import { useState, useMemo } from 'react'
-import { Search, SlidersHorizontal, ArrowUpDown, BookOpen, Bell, Users, BarChart2 } from 'lucide-react'
+import { useState, useMemo, useEffect } from 'react'
+import { Search, SlidersHorizontal, ArrowUpDown, BookOpen, Bell, Users, BarChart2, Zap } from 'lucide-react'
 import { AreaChart, Area, XAxis, Tooltip, ResponsiveContainer } from 'recharts'
 import { Header } from '../components/Header'
 import { StatCard } from '../components/StatCard'
 import { StudentCard } from '../components/StudentCard'
 import { AlertBanner } from '../components/AlertBanner'
+import { OnboardingOverlay } from '../components/OnboardingOverlay'
 import { STUDENTS, CLASS_STATS } from '../data/mockData'
+import { readSessionRecords, type SessionRecord } from '../hooks/useSignalTracker'
 import type { EngagementStatus } from '../types'
+
+const ONBOARDED_KEY = 'reflection-teacher-onboarded'
 
 interface Props {
   onStudentSelect: (id: string) => void
@@ -44,6 +48,17 @@ export function Dashboard({ onStudentSelect }: Props) {
   const [search, setSearch]         = useState('')
   const [sort, setSort]             = useState<SortOrder>('needs-help')
   const [contacted, setContacted]   = useState<Set<string>>(new Set())
+  const [showOnboarding, setShowOnboarding] = useState(() => !localStorage.getItem(ONBOARDED_KEY))
+  const [liveSessions, setLiveSessions] = useState<SessionRecord[]>(() => readSessionRecords())
+
+  useEffect(() => {
+    if (tab === 'pulse') setLiveSessions(readSessionRecords())
+  }, [tab])
+
+  function dismissOnboarding() {
+    localStorage.setItem(ONBOARDED_KEY, '1')
+    setShowOnboarding(false)
+  }
 
   function toggleContacted(id: string) {
     setContacted(prev => {
@@ -100,6 +115,7 @@ export function Dashboard({ onStudentSelect }: Props) {
 
   return (
     <div style={{ background: '#FAFAF5', minHeight: '100vh' }}>
+      {showOnboarding && <OnboardingOverlay onDismiss={dismissOnboarding} />}
       <Header stats={CLASS_STATS} />
 
       <main className="max-w-5xl mx-auto px-4 sm:px-6 py-10 animate-fade-in">
@@ -335,7 +351,54 @@ export function Dashboard({ onStudentSelect }: Props) {
 
         {/* ── Tab: Class Pulse ── */}
         {tab === 'pulse' && (
-          <section className="animate-fade-in">
+          <section className="animate-fade-in space-y-5">
+
+            {/* Live sessions from real student interactions */}
+            {liveSessions.length > 0 && (
+              <div className="rounded-2xl overflow-hidden"
+                style={{ background: 'white', border: '1.5px solid #ccfbf1', boxShadow: '0 1px 3px rgba(0,0,0,0.04)' }}>
+                <div className="px-5 py-4 flex items-center gap-2" style={{ borderBottom: '1px solid #f0fdfa' }}>
+                  <span className="w-2 h-2 rounded-full bg-green-400 animate-pulse flex-shrink-0" />
+                  <p className="text-sm font-bold" style={{ color: '#0C1825', fontFamily: "'Bricolage Grotesque', system-ui, sans-serif" }}>
+                    Live student sessions
+                  </p>
+                  <span className="ml-auto text-xs font-semibold px-2 py-0.5 rounded-full"
+                    style={{ background: '#f0fdf4', color: '#0F766E', border: '1px solid #bbf7d0' }}>
+                    {liveSessions.length} recorded
+                  </span>
+                </div>
+                {liveSessions.map((rec, i) => {
+                  const acc = rec.accuracy
+                  const scoreColor = acc >= 70 ? '#0F766E' : acc >= 50 ? '#d97706' : '#dc2626'
+                  const ago = Math.round((Date.now() - rec.timestamp) / 60000)
+                  const agoLabel = ago < 1 ? 'just now' : ago < 60 ? `${ago}m ago` : `${Math.round(ago / 60)}h ago`
+                  return (
+                    <div key={i} className="px-5 py-4 flex items-center gap-4"
+                      style={{ borderBottom: i < liveSessions.length - 1 ? '1px solid #f8fafc' : 'none' }}>
+                      <div className="w-9 h-9 rounded-xl flex items-center justify-center font-extrabold text-xs flex-shrink-0"
+                        style={{ background: '#f0fdfa', color: '#0F766E', border: '1px solid #ccfbf1' }}>
+                        {rec.name.split(' ').map(n => n[0]).join('').slice(0, 2).toUpperCase()}
+                      </div>
+                      <div className="flex-1 min-w-0">
+                        <p className="text-sm font-semibold truncate" style={{ color: '#0C1825' }}>{rec.name}</p>
+                        <div className="flex items-center gap-2 mt-0.5">
+                          <Zap className="w-3 h-3 flex-shrink-0" style={{ color: '#94a3b8' }} />
+                          <p className="text-xs truncate" style={{ color: '#94a3b8' }}>{rec.course}</p>
+                          <span className="text-xs flex-shrink-0" style={{ color: '#cbd5e1' }}>· {agoLabel}</span>
+                        </div>
+                      </div>
+                      <div className="text-right flex-shrink-0">
+                        <p className="text-base font-extrabold" style={{ color: scoreColor, fontFamily: "'Bricolage Grotesque', system-ui, sans-serif" }}>
+                          {acc}%
+                        </p>
+                        <p className="text-xs" style={{ color: '#94a3b8' }}>accuracy</p>
+                      </div>
+                    </div>
+                  )
+                })}
+              </div>
+            )}
+
             <div className="rounded-2xl p-6"
               style={{ background: 'white', border: '1px solid #f1f5f9', boxShadow: '0 1px 3px rgba(0,0,0,0.04)' }}>
               <div className="flex items-start justify-between mb-6">

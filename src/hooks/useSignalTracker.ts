@@ -91,3 +91,32 @@ export function clearSignals() {
   localStorage.removeItem(SIGNALS_KEY)
   localStorage.removeItem(VISITED_KEY)
 }
+
+// ── Session record (for teacher dashboard loop) ───────────────────────────────
+const LIVE_SESSIONS_KEY = 'reflection-live-sessions'
+
+export interface SessionRecord {
+  name: string
+  course: string
+  signals: SessionSignals
+  accuracy: number
+  timestamp: number
+}
+
+export function saveSessionRecord(name: string, course: string) {
+  const signals = readSignals()
+  const record: SessionRecord = {
+    name,
+    course,
+    signals,
+    accuracy: Math.round(signals.errorRateTrend * 100),
+    timestamp: Date.now(),
+  }
+  const existing = readSessionRecords().filter(r => !(r.name === name && r.course === course))
+  localStorage.setItem(LIVE_SESSIONS_KEY, JSON.stringify([record, ...existing].slice(0, 20)))
+}
+
+export function readSessionRecords(): SessionRecord[] {
+  try { return JSON.parse(localStorage.getItem(LIVE_SESSIONS_KEY) ?? '[]') }
+  catch { return [] }
+}

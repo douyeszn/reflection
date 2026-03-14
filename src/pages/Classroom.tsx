@@ -1,41 +1,99 @@
 import { useState, useEffect } from 'react'
 import { memo } from 'react'
 import { Sparkles, ChevronLeft, ChevronRight, Clock, BookOpen, Lightbulb, CheckCircle, XCircle, RotateCcw, Eye, Zap, RefreshCw, Target, BarChart2 } from 'lucide-react'
-import { FRACTIONS_COURSE, type Lesson } from '../data/courseData'
-import { useDwellTracker, useQuizTracker, readSignals, clearSignals } from '../hooks/useSignalTracker'
+import { ALL_COURSES, FRACTIONS_COURSE, type Course, type Lesson } from '../data/courseData'
+import { useDwellTracker, useQuizTracker, readSignals, clearSignals, saveSessionRecord } from '../hooks/useSignalTracker'
 
 interface Props { onExit: () => void }
 
 type Screen = { name: 'home' } | { name: 'lesson'; id: string } | { name: 'quiz' } | { name: 'summary' }
 
-// ── Course home ───────────────────────────────────────────────────────────────
-const CourseHome = memo(function CourseHome({ onLesson, onQuiz }: { onLesson: (id: string) => void; onQuiz: () => void }) {
+// ── Course selector ────────────────────────────────────────────────────────────
+const courseAccents: Record<string, { color: string; bg: string; border: string; tag: string }> = {
+  'fractions-division': { color: '#0F766E', bg: '#f0fdfa', border: '#ccfbf1', tag: 'Fractions' },
+  'long-division':      { color: '#7c3aed', bg: '#f5f3ff', border: '#ddd6fe', tag: 'Division' },
+  'word-problems':      { color: '#b45309', bg: '#fffbeb', border: '#fde68a', tag: 'Problem Solving' },
+}
+
+function CourseSelector({ onSelect }: { onSelect: (c: Course) => void }) {
+  return (
+    <div className="max-w-2xl mx-auto px-5 py-10 animate-fade-in">
+      <div className="mb-8">
+        <span className="text-xs font-bold uppercase tracking-widest" style={{ color: '#94a3b8' }}>Mathematics · Primary 4</span>
+        <h1 className="text-3xl font-extrabold mt-2 leading-tight" style={{ color: '#0C1825', fontFamily: "'Bricolage Grotesque', system-ui, sans-serif" }}>
+          Choose a course
+        </h1>
+        <p className="text-sm mt-2" style={{ color: '#64748b' }}>Pick a topic to start learning.</p>
+      </div>
+
+      <div className="space-y-4">
+        {ALL_COURSES.map((course, i) => {
+          const acc = courseAccents[course.id] ?? { color: '#0C1825', bg: '#f8fafc', border: '#f1f5f9', tag: course.subject }
+          const totalMins = course.lessons.reduce((sum, l) => sum + parseInt(l.duration), 0)
+          return (
+            <button
+              key={course.id}
+              onClick={() => onSelect(course)}
+              className="w-full flex items-center gap-5 rounded-2xl p-6 text-left"
+              style={{
+                background: 'white', border: `1.5px solid ${acc.border}`,
+                boxShadow: `0 1px 3px rgba(0,0,0,0.04), 0 4px 16px ${acc.color}10`,
+                cursor: 'pointer', transition: 'all 0.3s cubic-bezier(0.19,1,0.22,1)',
+                animationDelay: `${i * 80}ms`,
+              }}
+              onMouseEnter={e => { e.currentTarget.style.transform = 'translateY(-3px)'; e.currentTarget.style.boxShadow = `0 8px 32px ${acc.color}20` }}
+              onMouseLeave={e => { e.currentTarget.style.transform = 'translateY(0)'; e.currentTarget.style.boxShadow = `0 1px 3px rgba(0,0,0,0.04), 0 4px 16px ${acc.color}10` }}
+            >
+              <div className="w-12 h-12 rounded-2xl flex items-center justify-center font-extrabold text-lg flex-shrink-0"
+                style={{ background: acc.bg, color: acc.color, border: `1px solid ${acc.border}`, fontFamily: "'Bricolage Grotesque', system-ui, sans-serif" }}>
+                {String(i + 1).padStart(2, '0')}
+              </div>
+              <div className="flex-1 min-w-0">
+                <div className="flex items-center gap-2 mb-1">
+                  <span className="text-xs font-bold uppercase tracking-widest" style={{ color: acc.color }}>{acc.tag}</span>
+                </div>
+                <p className="text-base font-extrabold leading-tight" style={{ color: '#0C1825', fontFamily: "'Bricolage Grotesque', system-ui, sans-serif" }}>{course.title}</p>
+                <p className="text-xs mt-1" style={{ color: '#94a3b8' }}>
+                  {course.lessons.length} lessons · {course.quiz.length} questions · ~{totalMins} min
+                </p>
+              </div>
+              <ChevronRight className="w-5 h-5 flex-shrink-0" style={{ color: acc.color }} />
+            </button>
+          )
+        })}
+      </div>
+    </div>
+  )
+}
+
+// ── Course home ────────────────────────────────────────────────────────────────
+const CourseHome = memo(function CourseHome({ course, onLesson, onQuiz }: { course: Course; onLesson: (id: string) => void; onQuiz: () => void }) {
   const visited: string[] = JSON.parse(localStorage.getItem('reflection-classroom-visited') ?? '[]')
 
   return (
     <div className="max-w-2xl mx-auto px-5 py-10 animate-fade-in">
       <div className="mb-8">
-        <span className="text-xs font-bold uppercase tracking-widest" style={{ color: '#0F766E' }}>Mathematics · Primary 4</span>
+        <span className="text-xs font-bold uppercase tracking-widest" style={{ color: '#0F766E' }}>{course.subject} · {course.grade}</span>
         <h1 className="text-3xl font-extrabold mt-2 leading-tight" style={{ color: '#0C1825', fontFamily: "'Bricolage Grotesque', system-ui, sans-serif" }}>
-          Fractions & Division
+          {course.title}
         </h1>
-        <p className="text-sm mt-2" style={{ color: '#64748b' }}>3 lessons · 1 practice quiz · ~20 min</p>
+        <p className="text-sm mt-2" style={{ color: '#64748b' }}>{course.lessons.length} lessons · 1 practice quiz · ~{course.lessons.reduce((s, l) => s + parseInt(l.duration), 0)} min</p>
       </div>
 
       {/* Progress bar */}
       <div className="mb-8 rounded-2xl p-5" style={{ background: 'white', border: '1px solid #f1f5f9', boxShadow: '0 1px 3px rgba(0,0,0,0.04)' }}>
         <div className="flex items-center justify-between mb-2">
           <p className="text-xs font-semibold" style={{ color: '#94a3b8' }}>Your progress</p>
-          <p className="text-xs font-bold" style={{ color: '#0F766E' }}>{visited.length}/{FRACTIONS_COURSE.lessons.length} lessons</p>
+          <p className="text-xs font-bold" style={{ color: '#0F766E' }}>{visited.length}/{course.lessons.length} lessons</p>
         </div>
         <div className="h-2 rounded-full overflow-hidden" style={{ background: '#f1f5f9' }}>
-          <div className="h-full rounded-full" style={{ width: `${(visited.length / FRACTIONS_COURSE.lessons.length) * 100}%`, background: '#0F766E', transition: 'width 0.8s cubic-bezier(0.19,1,0.22,1)' }} />
+          <div className="h-full rounded-full" style={{ width: `${(visited.length / course.lessons.length) * 100}%`, background: '#0F766E', transition: 'width 0.8s cubic-bezier(0.19,1,0.22,1)' }} />
         </div>
       </div>
 
       {/* Lessons */}
       <div className="space-y-3 mb-6">
-        {FRACTIONS_COURSE.lessons.map((lesson, i) => {
+        {course.lessons.map((lesson, i) => {
           const done = visited.includes(lesson.id)
           return (
             <button
@@ -68,11 +126,7 @@ const CourseHome = memo(function CourseHome({ onLesson, onQuiz }: { onLesson: (i
       <button
         onClick={onQuiz}
         className="w-full flex items-center gap-4 rounded-2xl p-5 text-left"
-        style={{
-          background: '#fffbeb', border: '1px solid #fde68a',
-          boxShadow: '0 1px 3px rgba(0,0,0,0.04)', cursor: 'pointer',
-          transition: 'all 0.3s cubic-bezier(0.19,1,0.22,1)',
-        }}
+        style={{ background: '#fffbeb', border: '1px solid #fde68a', boxShadow: '0 1px 3px rgba(0,0,0,0.04)', cursor: 'pointer', transition: 'all 0.3s cubic-bezier(0.19,1,0.22,1)' }}
         onMouseEnter={e => { e.currentTarget.style.transform = 'translateY(-2px)'; e.currentTarget.style.boxShadow = '0 8px 24px rgba(180,83,9,0.08)' }}
         onMouseLeave={e => { e.currentTarget.style.transform = 'translateY(0)'; e.currentTarget.style.boxShadow = '0 1px 3px rgba(0,0,0,0.04)' }}
       >
@@ -82,7 +136,7 @@ const CourseHome = memo(function CourseHome({ onLesson, onQuiz }: { onLesson: (i
         </div>
         <div className="flex-1 min-w-0">
           <p className="text-sm font-bold" style={{ color: '#0C1825' }}>Practice Quiz</p>
-          <p className="text-xs mt-0.5" style={{ color: '#94a3b8' }}>{FRACTIONS_COURSE.quiz.length} questions · tests all 3 lessons</p>
+          <p className="text-xs mt-0.5" style={{ color: '#94a3b8' }}>{course.quiz.length} questions · tests all {course.lessons.length} lessons</p>
         </div>
         <ChevronRight className="w-4 h-4 flex-shrink-0" style={{ color: '#d97706' }} />
       </button>
@@ -90,7 +144,7 @@ const CourseHome = memo(function CourseHome({ onLesson, onQuiz }: { onLesson: (i
   )
 })
 
-// ── Lesson view ───────────────────────────────────────────────────────────────
+// ── Lesson view ────────────────────────────────────────────────────────────────
 function LessonView({ lesson, onBack, onNext, isLast }: { lesson: Lesson; onBack: () => void; onNext: () => void; isLast: boolean }) {
   const { isRevisit, trackExploration, trackRevisit } = useDwellTracker(lesson.id)
 
@@ -120,7 +174,7 @@ function LessonView({ lesson, onBack, onNext, isLast }: { lesson: Lesson; onBack
         {lesson.title}
       </h1>
 
-      {/* Fraction visual for lesson 1 */}
+      {/* Fraction visuals for fractions course only */}
       {lesson.id === 'l1' && <FractionVisual />}
       {lesson.id === 'l2' && <NumeratorDenominatorVisual />}
       {lesson.id === 'l3' && <AddingFractionsVisual />}
@@ -189,15 +243,15 @@ function LessonView({ lesson, onBack, onNext, isLast }: { lesson: Lesson; onBack
   )
 }
 
-// ── Quiz view ─────────────────────────────────────────────────────────────────
-function QuizView({ onDone, onBack }: { onDone: () => void; onBack: () => void }) {
+// ── Quiz view ──────────────────────────────────────────────────────────────────
+function QuizView({ course, onDone, onBack }: { course: Course; onDone: () => void; onBack: () => void }) {
   const [qIndex, setQIndex]         = useState(0)
   const [selected, setSelected]     = useState<number | null>(null)
   const [showResult, setShowResult] = useState(false)
   const { startQuestion, recordAnswer } = useQuizTracker()
 
-  const question = FRACTIONS_COURSE.quiz[qIndex]
-  const isLast   = qIndex === FRACTIONS_COURSE.quiz.length - 1
+  const question = course.quiz[qIndex]
+  const isLast   = qIndex === course.quiz.length - 1
 
   useEffect(() => { startQuestion() }, [qIndex]) // eslint-disable-line react-hooks/exhaustive-deps
 
@@ -215,7 +269,7 @@ function QuizView({ onDone, onBack }: { onDone: () => void; onBack: () => void }
     setShowResult(false)
   }
 
-  const progress = ((qIndex + (showResult ? 1 : 0)) / FRACTIONS_COURSE.quiz.length) * 100
+  const progress = ((qIndex + (showResult ? 1 : 0)) / course.quiz.length) * 100
 
   return (
     <div className="max-w-2xl mx-auto px-5 py-10 animate-fade-in">
@@ -225,7 +279,7 @@ function QuizView({ onDone, onBack }: { onDone: () => void; onBack: () => void }
           <div className="h-full rounded-full" style={{ width: `${progress}%`, background: '#0F766E', transition: 'width 0.5s cubic-bezier(0.19,1,0.22,1)' }} />
         </div>
         <span className="text-xs font-semibold flex-shrink-0" style={{ color: '#94a3b8' }}>
-          {qIndex + 1} / {FRACTIONS_COURSE.quiz.length}
+          {qIndex + 1} / {course.quiz.length}
         </span>
       </div>
 
@@ -294,7 +348,7 @@ function QuizView({ onDone, onBack }: { onDone: () => void; onBack: () => void }
   )
 }
 
-// ── Session summary ───────────────────────────────────────────────────────────
+// ── Session summary ────────────────────────────────────────────────────────────
 function SessionSummary({ onRestart, onExit }: { onRestart: () => void; onExit: () => void }) {
   const signals = readSignals()
   const dwellSec   = (signals.dwellTime / 1000).toFixed(0)
@@ -310,11 +364,11 @@ function SessionSummary({ onRestart, onExit }: { onRestart: () => void; onExit: 
   }[status]
 
   const signalRows = [
-    { icon: <Eye className="w-4 h-4" />,      label: 'Time spent reading', value: `${dwellSec}s` },
-    { icon: <Zap className="w-4 h-4" />,      label: 'Avg response time',  value: `${latencySec}s` },
-    { icon: <RefreshCw className="w-4 h-4" />, label: 'Lesson revisits',   value: String(signals.revisitCount) },
-    { icon: <Target className="w-4 h-4" />,   label: 'Quiz accuracy',      value: `${accuracy}%`, fill: accuracy },
-    { icon: <BarChart2 className="w-4 h-4" />, label: 'Topics explored',   value: String(signals.explorationDepth) },
+    { icon: <Eye className="w-4 h-4" />,       label: 'Time spent reading', value: `${dwellSec}s` },
+    { icon: <Zap className="w-4 h-4" />,       label: 'Avg response time',  value: `${latencySec}s` },
+    { icon: <RefreshCw className="w-4 h-4" />, label: 'Lesson revisits',    value: String(signals.revisitCount) },
+    { icon: <Target className="w-4 h-4" />,    label: 'Quiz accuracy',      value: `${accuracy}%`, fill: accuracy },
+    { icon: <BarChart2 className="w-4 h-4" />, label: 'Topics explored',    value: String(signals.explorationDepth) },
   ]
 
   return (
@@ -369,7 +423,7 @@ function SessionSummary({ onRestart, onExit }: { onRestart: () => void; onExit: 
   )
 }
 
-// ── Fraction visuals ──────────────────────────────────────────────────────────
+// ── Fraction visuals ───────────────────────────────────────────────────────────
 const FractionVisual = memo(function FractionVisual() {
   return (
     <div className="rounded-2xl p-6 mb-8 flex flex-col items-center gap-4"
@@ -378,7 +432,7 @@ const FractionVisual = memo(function FractionVisual() {
       <div className="flex gap-1">
         {[0, 1, 2, 3].map(i => (
           <div key={i} className="w-14 h-10 rounded-lg"
-            style={{ background: i === 0 ? '#0F766E' : '#e2e8f0', border: '2px solid white', transition: 'background 0.3s' }} />
+            style={{ background: i === 0 ? '#0F766E' : '#e2e8f0', border: '2px solid white' }} />
         ))}
       </div>
       <p className="text-xs" style={{ color: '#64748b' }}>1 part shaded out of 4 equal parts</p>
@@ -436,14 +490,31 @@ const AddingFractionsVisual = memo(function AddingFractionsVisual() {
   )
 })
 
-// ── Main Classroom ────────────────────────────────────────────────────────────
+// ── Main Classroom ─────────────────────────────────────────────────────────────
 export function Classroom({ onExit }: Props) {
+  const [selectedCourse, setSelectedCourse] = useState<Course | null>(null)
   const [screen, setScreen] = useState<Screen>({ name: 'home' })
 
+  const course = selectedCourse ?? FRACTIONS_COURSE
+
   const lessonIndex = screen.name === 'lesson'
-    ? FRACTIONS_COURSE.lessons.findIndex(l => l.id === screen.id)
+    ? course.lessons.findIndex(l => l.id === screen.id)
     : -1
-  const currentLesson = lessonIndex >= 0 ? FRACTIONS_COURSE.lessons[lessonIndex] : null
+  const currentLesson = lessonIndex >= 0 ? course.lessons[lessonIndex] : null
+
+  function headerTitle() {
+    if (!selectedCourse) return 'Courses'
+    if (screen.name === 'home') return course.title
+    if (screen.name === 'lesson') return currentLesson?.title ?? ''
+    if (screen.name === 'quiz') return 'Practice Quiz'
+    return 'Session Results'
+  }
+
+  function handleBack() {
+    if (!selectedCourse) { onExit(); return }
+    if (screen.name === 'home') { setSelectedCourse(null); return }
+    setScreen({ name: 'home' })
+  }
 
   return (
     <div style={{ background: '#FAFAF5', minHeight: '100vh' }}>
@@ -451,61 +522,71 @@ export function Classroom({ onExit }: Props) {
       <header className="sticky top-0 z-10"
         style={{ background: 'rgba(250,250,245,0.9)', backdropFilter: 'blur(12px)', borderBottom: '1px solid #e2e8f0' }}>
         <div className="max-w-2xl mx-auto px-5 h-14 flex items-center justify-between">
-          <button onClick={() => screen.name === 'home' ? onExit() : setScreen({ name: 'home' })}
+          <button onClick={handleBack}
             className="flex items-center gap-2 text-sm font-medium"
             style={{ color: '#64748b', background: 'none', border: 'none', cursor: 'pointer' }}>
             <ChevronLeft className="w-4 h-4" />
-            {screen.name === 'home' ? 'Exit' : 'Course'}
+            {!selectedCourse ? 'Exit' : screen.name === 'home' ? 'Courses' : 'Course'}
           </button>
 
           <div className="flex items-center gap-2">
             <div className="w-6 h-6 rounded-md flex items-center justify-center" style={{ background: '#0F766E' }}>
               <Sparkles className="w-3 h-3 text-white" />
             </div>
-            <span className="text-sm font-bold" style={{ color: '#0C1825', fontFamily: "'Bricolage Grotesque', system-ui, sans-serif" }}>
-              {screen.name === 'home' ? 'Fractions & Division' : screen.name === 'lesson' ? currentLesson?.title : screen.name === 'quiz' ? 'Practice Quiz' : 'Session Results'}
+            <span className="text-sm font-bold truncate max-w-[180px]" style={{ color: '#0C1825', fontFamily: "'Bricolage Grotesque', system-ui, sans-serif" }}>
+              {headerTitle()}
             </span>
           </div>
 
           <div className="w-16 text-right">
-            {screen.name === 'lesson' && (
+            {screen.name === 'lesson' && selectedCourse && (
               <span className="text-xs" style={{ color: '#94a3b8' }}>
-                {lessonIndex + 1}/{FRACTIONS_COURSE.lessons.length}
+                {lessonIndex + 1}/{course.lessons.length}
               </span>
             )}
           </div>
         </div>
       </header>
 
-      {/* Screens */}
-      {screen.name === 'home' && (
+      {/* Course selector */}
+      {!selectedCourse && (
+        <CourseSelector onSelect={c => { setSelectedCourse(c); setScreen({ name: 'home' }) }} />
+      )}
+
+      {selectedCourse && screen.name === 'home' && (
         <CourseHome
+          course={course}
           onLesson={id => setScreen({ name: 'lesson', id })}
           onQuiz={() => setScreen({ name: 'quiz' })}
         />
       )}
 
-      {screen.name === 'lesson' && currentLesson && (
+      {selectedCourse && screen.name === 'lesson' && currentLesson && (
         <LessonView
           lesson={currentLesson}
           onBack={() => setScreen({ name: 'home' })}
           onNext={() => {
-            const next = FRACTIONS_COURSE.lessons[lessonIndex + 1]
+            const next = course.lessons[lessonIndex + 1]
             if (next) setScreen({ name: 'lesson', id: next.id })
             else setScreen({ name: 'quiz' })
           }}
-          isLast={lessonIndex === FRACTIONS_COURSE.lessons.length - 1}
+          isLast={lessonIndex === course.lessons.length - 1}
         />
       )}
 
-      {screen.name === 'quiz' && (
+      {selectedCourse && screen.name === 'quiz' && (
         <QuizView
-          onDone={() => setScreen({ name: 'summary' })}
+          course={course}
+          onDone={() => {
+            const studentName = localStorage.getItem('reflection-student-name') ?? 'Anonymous'
+            saveSessionRecord(studentName, course.title)
+            setScreen({ name: 'summary' })
+          }}
           onBack={() => setScreen({ name: 'home' })}
         />
       )}
 
-      {screen.name === 'summary' && (
+      {selectedCourse && screen.name === 'summary' && (
         <SessionSummary
           onRestart={() => setScreen({ name: 'home' })}
           onExit={onExit}
