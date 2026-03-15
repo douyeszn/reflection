@@ -1,4 +1,5 @@
-import { Sparkles, Bell, ChevronLeft } from 'lucide-react'
+import { Bell, ChevronLeft } from 'lucide-react'
+import { Logo } from './Logo'
 import type { ClassStats } from '../types'
 
 interface Props {
@@ -24,13 +25,7 @@ export function Header({ stats, onBack, title }: Props) {
           )}
 
           <div className="flex items-center gap-2">
-            <div className="w-7 h-7 rounded-lg flex items-center justify-center flex-shrink-0"
-              style={{ background: '#0F766E' }}>
-              <Sparkles className="w-3.5 h-3.5 text-white" />
-            </div>
-            <span className="font-extrabold text-sm tracking-tight" style={{ color: '#0C1825' }}>
-              Reflection
-            </span>
+            <Logo size={28} />
             {title && (
               <>
                 <span className="text-slate-200 mx-1 select-none">/</span>

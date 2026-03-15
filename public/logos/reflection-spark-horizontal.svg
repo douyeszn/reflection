@@ -1,0 +1,12 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 182 50" width="182" height="50" role="img" aria-labelledby="spark-h-title">
+  <title id="spark-h-title">Reflection</title>
+  <!-- Icon (centred vertically in 50px) -->
+  <g transform="translate(0,5)">
+    <rect width="40" height="40" rx="10" fill="#0F766E"/>
+    <line x1="6" y1="33" x2="34" y2="33" stroke="rgba(255,255,255,0.2)" stroke-width="1.5" stroke-linecap="round"/>
+    <path d="M6,31 C10,31 14,22 20,16 C26,10 30,9 32,8" stroke="white" stroke-width="2.5" fill="none" stroke-linecap="round"/>
+    <path d="M32,3.5 L33.27,6.73 L36.5,8 L33.27,9.27 L32,12.5 L30.73,9.27 L27.5,8 L30.73,6.73 Z" fill="white"/>
+  </g>
+  <!-- Wordmark -->
+  <text x="52" y="31" font-family="system-ui, sans-serif" font-size="20" font-weight="700" fill="#0C1825" letter-spacing="-0.4">Reflection</text>
+</svg>

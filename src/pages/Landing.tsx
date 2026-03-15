@@ -1,25 +1,20 @@
 import { memo } from 'react'
-import { Sparkles, Zap, Users, TrendingUp, ArrowRight, ShieldCheck, GraduationCap, BookOpen, BarChart2, Bell, Eye, Lightbulb, Twitter, Github, Mail } from 'lucide-react'
+import { Zap, Users, TrendingUp, ArrowRight, ShieldCheck, GraduationCap, BookOpen, BarChart2, Bell, Eye, Lightbulb, Twitter, Github, Mail } from 'lucide-react'
+import { Logo } from '../components/Logo'
 
 interface Props {
   onEnter: () => void
   onEnterClassroom: () => void
 }
 
-const stats = [
-  { value: '20M+', label: 'out-of-school children in Africa' },
-  { value: '1:60',  label: 'teacher-to-student ratio' },
-  { value: '27%',  label: 'rural schools connected' },
-  { value: '5',    label: 'curiosity signals tracked' },
-]
 
 // Mini dashboard preview — the "unforgettable" hero visual
 const PREVIEW_STUDENTS = [
-  { initials: 'AU', name: 'Amara U.',    score: 38, status: 'fading',     color: '#ea580c' },
-  { initials: 'NB', name: 'Nakato B.',   score: 91, status: 'high',       color: '#0F766E' },
-  { initials: 'KM', name: 'Kofi M.',     score: 22, status: 'disengaged', color: '#dc2626' },
-  { initials: 'FD', name: 'Fatima D.',   score: 88, status: 'high',       color: '#0F766E' },
-  { initials: 'ER', name: 'Emmanuel R.', score: 58, status: 'moderate',   color: '#d97706' },
+  { initials: 'AU', name: 'Aline U.',    score: 38, status: 'fading',     color: '#ea580c' },
+  { initials: 'NB', name: 'Nadine B.',   score: 91, status: 'high',       color: '#0F766E' },
+  { initials: 'KM', name: 'Kevin M.',    score: 22, status: 'disengaged', color: '#dc2626' },
+  { initials: 'ID', name: 'Ineza D.',    score: 88, status: 'high',       color: '#0F766E' },
+  { initials: 'ER', name: 'Eric R.',     score: 58, status: 'moderate',   color: '#d97706' },
 ]
 
 const DashboardPreview = memo(function DashboardPreview() {
@@ -28,19 +23,16 @@ const DashboardPreview = memo(function DashboardPreview() {
       className="animate-float relative w-full max-w-sm mx-auto"
       style={{
         background: 'white',
-        borderRadius: '20px',
-        border: '1px solid #f1f5f9',
-        boxShadow: '0 4px 24px rgba(15,118,110,0.08), 0 24px 64px rgba(15,118,110,0.10), 0 1px 0 rgba(255,255,255,0.8) inset',
+        borderRadius: '16px',
+        border: '1px solid rgba(255,255,255,0.12)',
+        boxShadow: '8px 8px 0px rgba(0,0,0,0.35), 0 24px 64px rgba(0,0,0,0.4)',
         overflow: 'hidden',
       }}
     >
       {/* Mini header */}
       <div style={{ background: 'white', borderBottom: '1px solid #f8fafc', padding: '12px 16px' }}
         className="flex items-center gap-2">
-        <div className="w-5 h-5 rounded-md flex items-center justify-center" style={{ background: '#0F766E' }}>
-          <Sparkles className="w-2.5 h-2.5 text-white" />
-        </div>
-        <span className="text-xs font-bold" style={{ color: '#0C1825' }}>Reflection</span>
+        <Logo size={20} />
         <div className="ml-auto flex items-center gap-1.5 rounded-full px-2 py-0.5 text-xs font-semibold"
           style={{ background: '#fff7ed', border: '1px solid #fed7aa', color: '#c2410c' }}>
           <span className="w-1 h-1 rounded-full bg-orange-400" />
@@ -52,7 +44,7 @@ const DashboardPreview = memo(function DashboardPreview() {
       <div style={{ background: '#fff7ed', borderBottom: '1px solid #fde68a', padding: '8px 16px' }}
         className="flex items-center gap-2">
         <span className="text-xs font-medium" style={{ color: '#c2410c' }}>
-          ⚠ Amara's spark is fading on Fractions
+          ⚠ Aline's spark is fading on Fractions
         </span>
       </div>
 
@@ -88,20 +80,13 @@ const DashboardPreview = memo(function DashboardPreview() {
 
 export function Landing({ onEnter, onEnterClassroom }: Props) {
   return (
-    <div style={{ background: '#FAFAF5', color: '#0C1825' }}>
+    <div style={{ background: '#ffffff', color: '#0C1825' }}>
 
       {/* ── Nav ── */}
       <nav className="sticky top-0 z-10 px-6 sm:px-10 h-16 flex items-center justify-between w-full"
-        style={{ background: 'rgba(250,250,245,0.85)', backdropFilter: 'blur(12px)', borderBottom: '1px solid #e2e8f0' }}>
+        style={{ background: 'rgba(8,12,22,0.96)', backdropFilter: 'blur(16px)', borderBottom: '1px solid rgba(255,255,255,0.07)' }}>
         <div className="flex items-center gap-2.5 max-w-6xl mx-auto w-full justify-between">
-          <div className="flex items-center gap-2">
-            <div className="w-7 h-7 rounded-lg flex items-center justify-center" style={{ background: '#0F766E' }}>
-              <Sparkles className="w-3.5 h-3.5 text-white" />
-            </div>
-            <span className="font-bold text-base tracking-tight" style={{ color: '#0C1825', fontFamily: "'Bricolage Grotesque', system-ui, sans-serif" }}>
-              Reflection
-            </span>
-          </div>
+          <Logo size={28} textColor="white" />
 
           <div className="hidden md:flex items-center gap-7">
             {[
@@ -110,10 +95,10 @@ export function Landing({ onEnter, onEnterClassroom }: Props) {
               { label: 'For Students', id: 'for-students' },
             ].map(({ label, id }) => (
               <button key={label} className="text-sm font-medium"
-                style={{ color: '#64748b', background: 'none', border: 'none', cursor: 'pointer', transition: 'color 0.25s' }}
+                style={{ color: 'rgba(255,255,255,0.5)', background: 'none', border: 'none', cursor: 'pointer', transition: 'color 0.25s' }}
                 onClick={() => document.getElementById(id)?.scrollIntoView({ behavior: 'smooth', block: 'start' })}
-                onMouseEnter={e => (e.currentTarget.style.color = '#0C1825')}
-                onMouseLeave={e => (e.currentTarget.style.color = '#64748b')}>
+                onMouseEnter={e => (e.currentTarget.style.color = 'white')}
+                onMouseLeave={e => (e.currentTarget.style.color = 'rgba(255,255,255,0.5)')}>
                 {label}
               </button>
             ))}
@@ -125,32 +110,44 @@ export function Landing({ onEnter, onEnterClassroom }: Props) {
         </div>
       </nav>
 
-      {/* ── Hero — split layout with dot grid texture ── */}
-      <section className="dot-grid relative overflow-hidden">
-        {/* Warm gradient overlay over dot grid */}
-        <div className="absolute inset-0 pointer-events-none"
-          style={{ background: 'linear-gradient(135deg, rgba(250,250,245,0.97) 50%, rgba(240,253,250,0.85) 100%)' }} />
-        {/* Decorative geometric accents */}
-        <div className="absolute top-12 right-12 w-40 h-40 rounded-full pointer-events-none opacity-30"
-          style={{ background: 'radial-gradient(circle, #ccfbf1 0%, transparent 70%)' }} />
-        <div className="absolute bottom-0 left-8 w-28 h-28 rounded-2xl pointer-events-none opacity-20 rotate-12"
-          style={{ background: '#fde68a' }} />
+      {/* ── Dark hero block ── */}
+      <div style={{ background: 'linear-gradient(170deg, #0D132D 0%, #080c16 60%, #0B1B33 100%)', position: 'relative' }}>
 
-        <div className="relative max-w-6xl mx-auto px-6 sm:px-10 py-20 sm:py-28">
+      {/* ── Hero — full-bleed photo + gradient overlay ── */}
+      <section className="relative overflow-hidden" style={{
+        backgroundImage: `
+          linear-gradient(100deg, rgba(8,12,22,0.93) 0%, rgba(8,12,22,0.78) 45%, rgba(8,12,22,0.42) 100%),
+          url('/hero-bg.jpg')
+        `,
+        backgroundSize: 'cover',
+        backgroundPosition: 'center 30%',
+      }}>
+        {/* Subtle vignette bottom */}
+        <div className="absolute inset-x-0 bottom-0 h-32 pointer-events-none"
+          style={{ background: 'linear-gradient(to top, rgba(8,12,22,0.6), transparent)' }} />
+
+        <div className="relative max-w-6xl mx-auto px-6 sm:px-10 py-20 sm:py-32">
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-16 items-center">
 
             {/* Left: text */}
             <div className="animate-fade-in">
-              <h1 className="font-extrabold leading-[1.03] mb-6"
-                style={{ fontSize: 'clamp(40px, 5.8vw, 72px)', color: '#0C1825',
-                  fontFamily: "'Bricolage Grotesque', system-ui, sans-serif",
-                  letterSpacing: '-0.03em' }}>
+              {/* Eyebrow badge */}
+              <div className="inline-flex items-center gap-2 rounded-full px-3 py-1.5 mb-7"
+                style={{ background: 'rgba(15,118,110,0.15)', border: '1px solid rgba(15,118,110,0.3)' }}>
+                <span className="w-1.5 h-1.5 rounded-full animate-pulse" style={{ background: '#2dd4bf' }} />
+                <span className="text-xs font-semibold" style={{ color: '#2dd4bf' }}>Live signal tracking</span>
+              </div>
+
+              <h1 className="font-bold leading-[1.08] mb-6"
+                style={{ fontSize: 'clamp(40px, 5.8vw, 72px)', color: 'white',
+                  fontFamily: "'Instrument Serif', Georgia, serif",
+                  letterSpacing: '0.01em' }}>
                 No passion<br />should go<br />
-                <span style={{ color: '#0F766E' }}>undiscovered.</span>
+                <span style={{ color: '#2dd4bf' }}>undiscovered.</span>
               </h1>
 
               <p className="leading-relaxed mb-10 max-w-md"
-                style={{ fontSize: 'clamp(15px, 1.7vw, 17px)', color: '#64748b' }}>
+                style={{ fontSize: 'clamp(15px, 1.7vw, 17px)', color: 'rgba(255,255,255,0.72)' }}>
                 In classrooms where one teacher faces 60 students,
                 Reflection detects whose curiosity is fading —
                 before it goes out.
@@ -161,35 +158,44 @@ export function Landing({ onEnter, onEnterClassroom }: Props) {
                   Open classroom dashboard
                   <ArrowRight className="w-4 h-4" />
                 </button>
-                <button onClick={onEnterClassroom} className="btn-secondary">
+                <button onClick={onEnterClassroom}
+                  className="flex items-center gap-2 rounded-xl font-semibold text-sm"
+                  style={{ padding: '14px 24px', background: 'rgba(255,255,255,0.08)', color: 'rgba(255,255,255,0.85)',
+                    border: '1px solid rgba(255,255,255,0.12)', cursor: 'pointer',
+                    transition: 'background 0.3s, border-color 0.3s' }}
+                  onMouseEnter={e => { e.currentTarget.style.background = 'rgba(255,255,255,0.14)'; e.currentTarget.style.borderColor = 'rgba(255,255,255,0.22)' }}
+                  onMouseLeave={e => { e.currentTarget.style.background = 'rgba(255,255,255,0.08)'; e.currentTarget.style.borderColor = 'rgba(255,255,255,0.12)' }}>
                   <GraduationCap className="w-4 h-4" />
                   Student view
                 </button>
               </div>
 
               <div className="flex items-center gap-2">
-                <ShieldCheck className="w-4 h-4 flex-shrink-0" style={{ color: '#16a34a' }} />
-                <span className="text-xs" style={{ color: '#94a3b8' }}>
+                <ShieldCheck className="w-4 h-4 flex-shrink-0" style={{ color: '#2dd4bf' }} />
+                <span className="text-xs" style={{ color: 'rgba(255,255,255,0.3)' }}>
                   Offline-first · Kinyarwanda-ready · No sign-up needed
                 </span>
               </div>
             </div>
 
-            {/* Right: mini dashboard — the memorable visual */}
+            {/* Right: mini dashboard — white card pops on dark */}
             <div className="hidden lg:flex flex-col items-center animate-slide-up relative" style={{ animationDelay: '150ms' }}>
+              {/* Glow behind card */}
+              <div className="absolute inset-0 pointer-events-none"
+                style={{ background: 'radial-gradient(ellipse 70% 50% at 50% 50%, rgba(45,212,191,0.12) 0%, transparent 70%)' }} />
               {/* Floating chips */}
               <div className="absolute -top-4 -left-6 z-10 flex items-center gap-2 rounded-full px-3 py-1.5 text-xs font-semibold animate-slide-up"
-                style={{ background: '#fff7ed', border: '1px solid #fed7aa', color: '#c2410c', boxShadow: '0 4px 16px rgba(234,88,12,0.12)', animationDelay: '400ms' }}>
+                style={{ background: '#fff7ed', border: '1px solid #fed7aa', color: '#c2410c', boxShadow: '0 4px 24px rgba(234,88,12,0.2)', animationDelay: '400ms' }}>
                 <span className="w-1.5 h-1.5 rounded-full bg-orange-400" />
-                Amara fading · 3 days
+                Aline fading · 3 days
               </div>
               <div className="absolute -bottom-4 -right-4 z-10 flex items-center gap-2 rounded-full px-3 py-1.5 text-xs font-semibold animate-slide-up"
-                style={{ background: '#f0fdf4', border: '1px solid #bbf7d0', color: '#15803d', boxShadow: '0 4px 16px rgba(21,128,61,0.10)', animationDelay: '550ms' }}>
+                style={{ background: '#f0fdf4', border: '1px solid #bbf7d0', color: '#15803d', boxShadow: '0 4px 24px rgba(21,128,61,0.18)', animationDelay: '550ms' }}>
                 <TrendingUp className="w-3 h-3" />
-                Nakato on a spike
+                Nadine on a spike
               </div>
               <div className="absolute top-1/2 -right-10 z-10 flex items-center gap-2 rounded-full px-3 py-1.5 text-xs font-semibold animate-slide-up"
-                style={{ background: 'white', border: '1px solid #e2e8f0', color: '#0C1825', boxShadow: '0 4px 16px rgba(0,0,0,0.06)', animationDelay: '650ms' }}>
+                style={{ background: 'rgba(255,255,255,0.95)', border: '1px solid rgba(255,255,255,0.2)', color: '#0C1825', boxShadow: '0 4px 20px rgba(0,0,0,0.25)', animationDelay: '650ms' }}>
                 <span className="w-1.5 h-1.5 rounded-full bg-green-400" />
                 Live · Just now
               </div>
@@ -197,37 +203,21 @@ export function Landing({ onEnter, onEnterClassroom }: Props) {
             </div>
           </div>
         </div>
+
       </section>
 
-      {/* ── Stats marquee ── */}
-      <div className="py-5 overflow-hidden relative"
-        style={{ background: '#0C1825', borderTop: '1px solid rgba(255,255,255,0.06)', borderBottom: '1px solid rgba(255,255,255,0.06)' }}>
-        <div className="absolute inset-y-0 left-0 w-20 z-10 pointer-events-none"
-          style={{ background: 'linear-gradient(90deg, #0C1825, transparent)' }} />
-        <div className="absolute inset-y-0 right-0 w-20 z-10 pointer-events-none"
-          style={{ background: 'linear-gradient(270deg, #0C1825, transparent)' }} />
-        <div className="animate-marquee flex gap-16 w-max">
-          {[...stats, ...stats].map((s, i) => (
-            <div key={i} className="flex items-baseline gap-2 flex-shrink-0">
-              <span className="font-extrabold" style={{ fontSize: '22px', color: '#2dd4bf', fontFamily: "'Bricolage Grotesque', system-ui, sans-serif" }}>
-                {s.value}
-              </span>
-              <span className="text-xs leading-tight" style={{ color: 'rgba(255,255,255,0.4)' }}>{s.label}</span>
-            </div>
-          ))}
-        </div>
-      </div>
+      </div>{/* end dark hero block */}
 
       {/* ── Features: alternating full-width color-block strips ── */}
       <div>
         {[
           {
-            tag: 'Detection', color: '#b45309', sectionBg: '#fffbeb', accentBg: '#fde68a',
+            tag: 'Detection', color: '#b45309', sectionBg: '#ffffff', accentBg: '#fef9ee',
             title: 'See whose spark is fading',
             desc: 'Dwell time, revisit rate, and exploration depth surface as passive behavioral signals — no quizzes, no interruptions to the learning flow.',
             visual: (
               <div className="rounded-2xl p-5 space-y-3" style={{ background: 'white', border: '1px solid #fde68a', boxShadow: '0 4px 24px rgba(180,83,9,0.08)' }}>
-                {[{ name: 'Amara U.', score: 38, color: '#ea580c' }, { name: 'Kofi M.', score: 22, color: '#dc2626' }, { name: 'Emmanuel R.', score: 58, color: '#d97706' }].map(s => (
+                {[{ name: 'Aline U.', score: 38, color: '#ea580c' }, { name: 'Kevin M.', score: 22, color: '#dc2626' }, { name: 'Eric R.', score: 58, color: '#d97706' }].map(s => (
                   <div key={s.name} className="flex items-center gap-3">
                     <p className="text-xs font-semibold w-24 flex-shrink-0" style={{ color: '#0C1825' }}>{s.name}</p>
                     <div className="flex-1 h-2 rounded-full overflow-hidden" style={{ background: '#f1f5f9' }}>
@@ -244,7 +234,7 @@ export function Landing({ onEnter, onEnterClassroom }: Props) {
             reverse: false,
           },
           {
-            tag: 'Alerts', color: '#0F766E', sectionBg: '#f0fdfa', accentBg: '#ccfbf1',
+            tag: 'Alerts', color: '#0F766E', sectionBg: '#f7fffe', accentBg: '#e6faf7',
             title: 'Named students, not averages',
             desc: "Know exactly which student is disengaging, on which topic, and since when — not a class-wide percentage that hides everyone.",
             visual: (
@@ -254,9 +244,9 @@ export function Landing({ onEnter, onEnterClassroom }: Props) {
                   <span className="text-xs font-semibold px-2 py-0.5 rounded-full" style={{ background: '#fff7ed', color: '#c2410c', border: '1px solid #fed7aa' }}>3 students</span>
                 </div>
                 {[
-                  { initials: 'AU', name: 'Amara U.', topic: 'Fractions', days: '3 days', color: '#ea580c' },
-                  { initials: 'KM', name: 'Kofi M.', topic: 'Algebra', days: '5 days', color: '#dc2626' },
-                  { initials: 'ER', name: 'Emmanuel R.', topic: 'Geometry', days: '1 day', color: '#d97706' },
+                  { initials: 'AU', name: 'Aline U.', topic: 'Fractions', days: '3 days', color: '#ea580c' },
+                  { initials: 'KM', name: 'Kevin M.', topic: 'Algebra', days: '5 days', color: '#dc2626' },
+                  { initials: 'ER', name: 'Eric R.', topic: 'Geometry', days: '1 day', color: '#d97706' },
                 ].map((s, i, arr) => (
                   <div key={s.name} className="px-5 py-3 flex items-center gap-3" style={{ borderBottom: i < arr.length - 1 ? '1px solid #f8fafc' : 'none' }}>
                     <div className="w-7 h-7 rounded-full flex items-center justify-center text-xs font-extrabold flex-shrink-0" style={{ background: '#f1f5f9', color: s.color }}>{s.initials}</div>
@@ -272,12 +262,12 @@ export function Landing({ onEnter, onEnterClassroom }: Props) {
             reverse: true,
           },
           {
-            tag: 'History', color: '#15803d', sectionBg: '#f0fdf4', accentBg: '#bbf7d0',
+            tag: 'History', color: '#15803d', sectionBg: '#ffffff', accentBg: '#ebfdf3',
             title: 'Track curiosity over time',
             desc: 'Session-by-session timelines with curiosity spikes and confusion markers — spot the pattern before it becomes a dropout risk.',
             visual: (
               <div className="rounded-2xl p-5" style={{ background: 'white', border: '1px solid #bbf7d0', boxShadow: '0 4px 24px rgba(21,128,61,0.08)' }}>
-                <p className="text-xs font-semibold mb-3" style={{ color: '#0C1825' }}>Nakato B. — last 8 sessions</p>
+                <p className="text-xs font-semibold mb-3" style={{ color: '#0C1825' }}>Nadine B. — last 8 sessions</p>
                 <div className="flex items-end gap-1.5 h-16">
                   {[40, 55, 48, 70, 65, 82, 91, 88].map((v, i) => (
                     <div key={i} className="flex-1 rounded-t-sm" style={{ height: `${v}%`, background: v >= 75 ? '#16a34a' : v >= 55 ? '#0F766E' : '#94a3b8', opacity: 0.85 }} />
@@ -305,7 +295,7 @@ export function Landing({ onEnter, onEnterClassroom }: Props) {
             <div className="relative max-w-6xl mx-auto px-6 sm:px-10 py-20">
               <div className={`grid grid-cols-1 lg:grid-cols-2 gap-16 items-center ${reverse ? 'lg:[direction:rtl]' : ''}`}>
                 <div className={reverse ? 'lg:[direction:ltr]' : ''}>
-                  <span className="text-xs font-bold uppercase tracking-widest" style={{ color }}>{tag}</span>
+                  <span className="text-xs font-bold uppercase" style={{ letterSpacing: '0.18em', color }}>{tag}</span>
                   <h2 className="font-extrabold mt-3 mb-4 leading-tight"
                     style={{ fontSize: 'clamp(26px,3.5vw,40px)', color: '#0C1825',
                       fontFamily: "'Bricolage Grotesque', system-ui, sans-serif", letterSpacing: '-0.02em' }}>
@@ -321,9 +311,9 @@ export function Landing({ onEnter, onEnterClassroom }: Props) {
       </div>
 
       {/* ── Signal toolkit 2×2 grid ── */}
-      <section className="max-w-6xl mx-auto px-6 sm:px-10 py-24">
+      <section className="max-w-6xl mx-auto px-6 sm:px-10 py-24" style={{ background: '#ffffff' }}>
         <div className="text-center mb-14">
-          <p className="text-xs font-semibold uppercase tracking-widest mb-3" style={{ color: '#94a3b8' }}>The signals</p>
+          <p className="text-xs font-semibold uppercase mb-3" style={{ letterSpacing: '0.18em', color: '#94a3b8' }}>The signals</p>
           <h2 className="font-extrabold tracking-tight"
             style={{ fontSize: 'clamp(28px,4vw,44px)', color: '#0C1825',
               fontFamily: "'Bricolage Grotesque', system-ui, sans-serif", letterSpacing: '-0.025em' }}>
@@ -357,11 +347,11 @@ export function Landing({ onEnter, onEnterClassroom }: Props) {
       </section>
 
       {/* ── How it works: 3 steps ── */}
-      <section id="how-it-works" style={{ background: '#f8fafc', borderTop: '1px solid #f1f5f9', borderBottom: '1px solid #f1f5f9' }}
+      <section id="how-it-works" style={{ background: '#ffffff', borderTop: '1px solid #f1f5f9', borderBottom: '1px solid #f1f5f9' }}
         className="px-6 sm:px-10 py-24">
         <div className="max-w-6xl mx-auto">
           <div className="text-center mb-16">
-            <p className="text-xs font-semibold uppercase tracking-widest mb-3" style={{ color: '#94a3b8' }}>The process</p>
+            <p className="text-xs font-semibold uppercase mb-3" style={{ letterSpacing: '0.18em', color: '#94a3b8' }}>The process</p>
             <h2 className="font-extrabold"
               style={{ fontSize: 'clamp(28px,4vw,44px)', color: '#0C1825',
                 fontFamily: "'Bricolage Grotesque', system-ui, sans-serif", letterSpacing: '-0.025em' }}>
@@ -406,26 +396,35 @@ export function Landing({ onEnter, onEnterClassroom }: Props) {
         </div>
       </section>
 
-      {/* ── Social proof quote ── */}
-      <section className="max-w-6xl mx-auto px-6 sm:px-10 py-20">
-        <div className="rounded-3xl p-10 md:p-14 relative overflow-hidden"
-          style={{ background: '#f0fdfa', border: '1px solid #ccfbf1' }}>
-          <div className="absolute top-0 right-0 w-48 h-48 rounded-full opacity-20 pointer-events-none"
-            style={{ background: 'radial-gradient(circle, #0F766E 0%, transparent 70%)', transform: 'translate(30%, -30%)' }} />
-          <div className="relative max-w-2xl">
-            <p className="text-3xl font-extrabold leading-snug mb-6"
-              style={{ color: '#0C1825', fontFamily: "'Bricolage Grotesque', system-ui, sans-serif" }}>
-              "I have 58 students. By the time I notice one is lost, they've already given up."
-            </p>
-            <p className="text-sm mb-6" style={{ color: '#0d9488' }}>
-              Reflection was built because of that sentence.
-            </p>
-            <div className="flex items-center gap-3">
-              <div className="w-9 h-9 rounded-full flex items-center justify-center text-xs font-extrabold flex-shrink-0"
-                style={{ background: '#0F766E', color: 'white' }}>MT</div>
-              <div>
-                <p className="text-sm font-semibold" style={{ color: '#0C1825' }}>Mr. Tuyishime</p>
-                <p className="text-xs" style={{ color: '#94a3b8' }}>Mathematics teacher · Kigali, Rwanda</p>
+      {/* ── Social proof quote — dark block ── */}
+      <section className="px-6 sm:px-10 py-0">
+        <div className="max-w-6xl mx-auto">
+          <div className="rounded-3xl p-10 md:p-16 relative overflow-hidden"
+            style={{ background: '#080c16' }}>
+            {/* Radial teal glow */}
+            <div className="absolute top-0 right-0 pointer-events-none"
+              style={{ width: 400, height: 400, borderRadius: '50%', opacity: 0.25,
+                background: 'radial-gradient(circle, #0F766E 0%, transparent 65%)', transform: 'translate(30%, -30%)' }} />
+            {/* Dot grid */}
+            <div className="absolute inset-0 pointer-events-none opacity-20 rounded-3xl overflow-hidden"
+              style={{ backgroundImage: 'radial-gradient(circle, rgba(255,255,255,0.07) 1px, transparent 1px)', backgroundSize: '24px 24px' }} />
+            <div className="relative max-w-2xl">
+              {/* Quote mark */}
+              <div className="text-7xl font-extrabold leading-none mb-2 select-none" style={{ color: '#0F766E', fontFamily: 'Georgia, serif', lineHeight: 1 }}>"</div>
+              <p className="text-2xl md:text-3xl font-extrabold leading-snug mb-6"
+                style={{ color: 'white', fontFamily: "'Bricolage Grotesque', system-ui, sans-serif" }}>
+                I have 58 students. By the time I notice one is lost, they've already given up.
+              </p>
+              <p className="text-sm mb-8" style={{ color: 'rgba(45,212,191,0.8)' }}>
+                Reflection was built because of that sentence.
+              </p>
+              <div className="flex items-center gap-3">
+                <div className="w-10 h-10 rounded-full flex items-center justify-center text-xs font-extrabold flex-shrink-0"
+                  style={{ background: '#0F766E', color: 'white' }}>MT</div>
+                <div>
+                  <p className="text-sm font-semibold" style={{ color: 'white' }}>Mr. Tuyishime</p>
+                  <p className="text-xs" style={{ color: 'rgba(255,255,255,0.35)' }}>Mathematics teacher · Kigali, Rwanda</p>
+                </div>
               </div>
             </div>
           </div>
@@ -436,7 +435,7 @@ export function Landing({ onEnter, onEnterClassroom }: Props) {
       <section id="for-teachers" style={{ background: '#0C1825' }} className="px-6 sm:px-10 pt-24 pb-0">
         <div className="max-w-6xl mx-auto">
           <div className="text-center mb-16">
-            <p className="text-xs font-semibold uppercase tracking-widest mb-3" style={{ color: 'rgba(255,255,255,0.3)' }}>
+            <p className="text-xs font-semibold uppercase mb-3" style={{ letterSpacing: '0.18em', color: 'rgba(255,255,255,0.3)' }}>
               Who it's for
             </p>
             <h2 className="font-extrabold text-white leading-tight"
@@ -455,7 +454,7 @@ export function Landing({ onEnter, onEnterClassroom }: Props) {
                   style={{ background: '#0F766E' }}>
                   <GraduationCap className="w-5 h-5 text-white" />
                 </div>
-                <span className="text-xs font-bold uppercase tracking-widest" style={{ color: '#0F766E' }}>For Teachers</span>
+                <span className="text-xs font-bold uppercase" style={{ letterSpacing: '0.18em', color: '#0F766E' }}>For Teachers</span>
                 <h3 className="text-xl font-extrabold text-white mt-2 leading-snug"
                   style={{ fontFamily: "'Bricolage Grotesque', system-ui, sans-serif" }}>
                   Know every student by name,<br />not by average.
@@ -491,7 +490,7 @@ export function Landing({ onEnter, onEnterClassroom }: Props) {
                   style={{ background: '#f97316' }}>
                   <Lightbulb className="w-5 h-5 text-white" />
                 </div>
-                <span className="text-xs font-bold uppercase tracking-widest" style={{ color: '#f97316' }}>For Students</span>
+                <span className="text-xs font-bold uppercase" style={{ letterSpacing: '0.18em', color: '#f97316' }}>For Students</span>
                 <h3 className="text-xl font-extrabold text-white mt-2 leading-snug"
                   style={{ fontFamily: "'Bricolage Grotesque', system-ui, sans-serif" }}>
                   Your curiosity shapes<br />how you're taught.
@@ -557,13 +556,7 @@ export function Landing({ onEnter, onEnterClassroom }: Props) {
             {/* Brand */}
             <div className="col-span-2 md:col-span-1">
               <div className="flex items-center gap-2 mb-4">
-                <div className="w-7 h-7 rounded-lg flex items-center justify-center" style={{ background: '#0F766E' }}>
-                  <Sparkles className="w-3.5 h-3.5 text-white" />
-                </div>
-                <span className="font-extrabold text-white text-sm"
-                  style={{ fontFamily: "'Bricolage Grotesque', system-ui, sans-serif" }}>
-                  Reflection
-                </span>
+                <Logo size={28} textColor="white" />
               </div>
               <p className="text-xs leading-relaxed mb-6" style={{ color: 'rgba(255,255,255,0.35)', maxWidth: '200px' }}>
                 Curiosity detection for classrooms where every spark matters.

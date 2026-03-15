@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react'
 import { memo } from 'react'
-import { Sparkles, ChevronLeft, ChevronRight, Clock, BookOpen, Lightbulb, CheckCircle, XCircle, RotateCcw, Eye, Zap, RefreshCw, Target, BarChart2 } from 'lucide-react'
+import { ChevronLeft, ChevronRight, Clock, BookOpen, Lightbulb, CheckCircle, XCircle, RotateCcw, Eye, Zap, RefreshCw, Target, BarChart2 } from 'lucide-react'
+import { LogoIcon } from '../components/Logo'
 import { ALL_COURSES, FRACTIONS_COURSE, type Course, type Lesson } from '../data/courseData'
 import { useDwellTracker, useQuizTracker, readSignals, clearSignals, saveSessionRecord } from '../hooks/useSignalTracker'
 
@@ -530,9 +531,7 @@ export function Classroom({ onExit }: Props) {
           </button>
 
           <div className="flex items-center gap-2">
-            <div className="w-6 h-6 rounded-md flex items-center justify-center" style={{ background: '#0F766E' }}>
-              <Sparkles className="w-3 h-3 text-white" />
-            </div>
+            <LogoIcon size={24} />
             <span className="text-sm font-bold truncate max-w-[180px]" style={{ color: '#0C1825', fontFamily: "'Bricolage Grotesque', system-ui, sans-serif" }}>
               {headerTitle()}
             </span>

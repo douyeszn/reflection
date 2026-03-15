@@ -1,5 +1,6 @@
 import { useState } from 'react'
-import { Sparkles, ChevronLeft, ArrowRight, GraduationCap, Lightbulb, Eye, EyeOff } from 'lucide-react'
+import { ChevronLeft, ArrowRight, GraduationCap, Lightbulb, Eye, EyeOff } from 'lucide-react'
+import { Logo } from '../components/Logo'
 
 interface Props {
   role: 'teacher' | 'student'
@@ -265,14 +266,7 @@ export function Login({ role, onSuccess, onBack }: Props) {
             style={{ color: '#64748b', background: 'none', border: 'none', cursor: 'pointer' }}>
             <ChevronLeft className="w-4 h-4" /> Back
           </button>
-          <div className="flex items-center gap-2">
-            <div className="w-6 h-6 rounded-md flex items-center justify-center" style={{ background: '#0F766E' }}>
-              <Sparkles className="w-3 h-3 text-white" />
-            </div>
-            <span className="text-sm font-bold" style={{ color: '#0C1825', fontFamily: "'Bricolage Grotesque', system-ui, sans-serif" }}>
-              Reflection
-            </span>
-          </div>
+          <Logo size={24} />
           <div className="w-16" />
         </div>
       </header>

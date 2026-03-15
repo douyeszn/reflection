@@ -1,0 +1,20 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 182 50" width="182" height="50" role="img" aria-labelledby="mirror-h-title">
+  <title id="mirror-h-title">Reflection</title>
+  <defs>
+    <linearGradient id="reflFadeH" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" stop-color="white" stop-opacity="0.28"/>
+      <stop offset="100%" stop-color="white" stop-opacity="0"/>
+    </linearGradient>
+  </defs>
+  <g transform="translate(0,5)">
+    <rect width="40" height="40" rx="10" fill="#0F766E"/>
+    <line x1="6" y1="22" x2="34" y2="22" stroke="rgba(255,255,255,0.3)" stroke-width="0.75"/>
+    <rect x="8"  y="15" width="6" height="7"  rx="1.5" fill="white"/>
+    <rect x="17" y="9"  width="6" height="13" rx="1.5" fill="white"/>
+    <rect x="26" y="12" width="6" height="10" rx="1.5" fill="white"/>
+    <rect x="8"  y="22" width="6" height="5"  rx="1.5" fill="url(#reflFadeH)"/>
+    <rect x="17" y="22" width="6" height="9"  rx="1.5" fill="url(#reflFadeH)"/>
+    <rect x="26" y="22" width="6" height="7"  rx="1.5" fill="url(#reflFadeH)"/>
+  </g>
+  <text x="52" y="31" font-family="system-ui, sans-serif" font-size="20" font-weight="700" fill="#0C1825" letter-spacing="-0.4">Reflection</text>
+</svg>
