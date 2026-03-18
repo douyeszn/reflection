@@ -1,9 +1,9 @@
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useRef } from 'react'
 import { memo } from 'react'
 import { ChevronLeft, ChevronRight, Clock, BookOpen, Lightbulb, CheckCircle, XCircle, RotateCcw, Eye, Zap, RefreshCw, Target, BarChart2 } from 'lucide-react'
 import { LogoIcon } from '../components/Logo'
 import { ALL_COURSES, FRACTIONS_COURSE, type Course, type Lesson } from '../data/courseData'
-import { useDwellTracker, useQuizTracker, readSignals, clearSignals, saveSessionRecord } from '../hooks/useSignalTracker'
+import { useDwellTracker, useQuizTracker, readSignals, clearSignals, saveSessionRecord, markLessonComplete, getLessonsForReview } from '../hooks/useSignalTracker'
 
 interface Props { onExit: () => void }
 
@@ -70,6 +70,8 @@ function CourseSelector({ onSelect }: { onSelect: (c: Course) => void }) {
 // ── Course home ────────────────────────────────────────────────────────────────
 const CourseHome = memo(function CourseHome({ course, onLesson, onQuiz }: { course: Course; onLesson: (id: string) => void; onQuiz: () => void }) {
   const visited: string[] = JSON.parse(localStorage.getItem('reflection-classroom-visited') ?? '[]')
+  const reviewDueIds   = getLessonsForReview(course.lessons.map(l => l.id))
+  const reviewDue      = course.lessons.filter(l => reviewDueIds.includes(l.id))
 
   return (
     <div className="max-w-2xl mx-auto px-5 py-10 animate-fade-in">
@@ -91,6 +93,38 @@ const CourseHome = memo(function CourseHome({ course, onLesson, onQuiz }: { cour
           <div className="h-full rounded-full" style={{ width: `${(visited.length / course.lessons.length) * 100}%`, background: '#0F766E', transition: 'width 0.8s cubic-bezier(0.19,1,0.22,1)' }} />
         </div>
       </div>
+
+      {/* Spaced review queue — shown before new lessons (Murray et al. 2024) */}
+      {reviewDue.length > 0 && (
+        <div className="mb-8">
+          <div className="flex items-center gap-2 mb-3">
+            <RotateCcw className="w-3.5 h-3.5" style={{ color: '#7c3aed' }} />
+            <p className="text-xs font-bold uppercase tracking-widest" style={{ color: '#7c3aed' }}>Due for review</p>
+            <span className="text-xs px-2 py-0.5 rounded-full font-semibold" style={{ background: '#f5f3ff', color: '#7c3aed', border: '1px solid #ddd6fe' }}>
+              {reviewDue.length}
+            </span>
+          </div>
+          <div className="space-y-2">
+            {reviewDue.map(lesson => (
+              <button
+                key={lesson.id}
+                onClick={() => onLesson(lesson.id)}
+                className="w-full flex items-center gap-4 rounded-2xl px-5 py-4 text-left"
+                style={{ background: '#faf5ff', border: '1.5px solid #ddd6fe', cursor: 'pointer', transition: 'all 0.25s' }}
+                onMouseEnter={e => { e.currentTarget.style.background = '#f5f3ff'; e.currentTarget.style.borderColor = '#c4b5fd' }}
+                onMouseLeave={e => { e.currentTarget.style.background = '#faf5ff'; e.currentTarget.style.borderColor = '#ddd6fe' }}
+              >
+                <RotateCcw className="w-4 h-4 flex-shrink-0" style={{ color: '#7c3aed' }} />
+                <div className="flex-1 min-w-0">
+                  <p className="text-sm font-semibold truncate" style={{ color: '#0C1825' }}>{lesson.title}</p>
+                  <p className="text-xs mt-0.5" style={{ color: '#94a3b8' }}>Review · {lesson.duration}</p>
+                </div>
+                <ChevronRight className="w-4 h-4 flex-shrink-0" style={{ color: '#c4b5fd' }} />
+              </button>
+            ))}
+          </div>
+        </div>
+      )}
 
       {/* Lessons */}
       <div className="space-y-3 mb-6">
@@ -148,10 +182,16 @@ const CourseHome = memo(function CourseHome({ course, onLesson, onQuiz }: { cour
 // ── Lesson view ────────────────────────────────────────────────────────────────
 function LessonView({ lesson, onBack, onNext, isLast }: { lesson: Lesson; onBack: () => void; onNext: () => void; isLast: boolean }) {
   const { isRevisit, trackExploration, trackRevisit } = useDwellTracker(lesson.id)
+  const [exploredTopics, setExploredTopics] = useState<Set<string>>(new Set())
 
   useEffect(() => {
     if (isRevisit) trackRevisit()
   }, [isRevisit]) // eslint-disable-line react-hooks/exhaustive-deps
+
+  function handleTopicClick(topic: string) {
+    trackExploration()
+    setExploredTopics(prev => new Set(prev).add(topic))
+  }
 
   return (
     <div className="max-w-2xl mx-auto px-5 py-10 animate-fade-in">
@@ -208,24 +248,41 @@ function LessonView({ lesson, onBack, onNext, isLast }: { lesson: Lesson; onBack
         })}
       </div>
 
-      {/* Related topics */}
+      {/* Related topics — curiosity probe (OECD 2024: voluntary depth is a curiosity signal) */}
       <div className="mb-10">
-        <p className="text-xs font-semibold uppercase tracking-widest mb-3" style={{ color: '#94a3b8' }}>
-          <BookOpen className="w-3 h-3 inline mr-1.5" />Explore more
-        </p>
+        <div className="flex items-center gap-2 mb-3">
+          <p className="text-xs font-semibold uppercase tracking-widest" style={{ color: '#94a3b8' }}>
+            <BookOpen className="w-3 h-3 inline mr-1.5" />Explore more
+          </p>
+          {exploredTopics.size > 0 && (
+            <span className="text-xs px-2 py-0.5 rounded-full font-semibold" style={{ background: '#f0fdfa', color: '#0F766E', border: '1px solid #ccfbf1' }}>
+              {exploredTopics.size} explored
+            </span>
+          )}
+        </div>
         <div className="flex flex-wrap gap-2">
-          {lesson.relatedTopics.map(topic => (
-            <button
-              key={topic}
-              onClick={trackExploration}
-              className="px-3 py-1.5 rounded-full text-xs font-semibold"
-              style={{ background: 'white', border: '1px solid #e2e8f0', color: '#64748b', cursor: 'pointer', transition: 'all 0.25s' }}
-              onMouseEnter={e => { e.currentTarget.style.background = '#f0fdfa'; e.currentTarget.style.borderColor = '#ccfbf1'; e.currentTarget.style.color = '#0F766E' }}
-              onMouseLeave={e => { e.currentTarget.style.background = 'white'; e.currentTarget.style.borderColor = '#e2e8f0'; e.currentTarget.style.color = '#64748b' }}
-            >
-              {topic}
-            </button>
-          ))}
+          {lesson.relatedTopics.map(topic => {
+            const explored = exploredTopics.has(topic)
+            return (
+              <button
+                key={topic}
+                onClick={() => handleTopicClick(topic)}
+                className="flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-semibold"
+                style={{
+                  background: explored ? '#f0fdfa' : 'white',
+                  border: `1px solid ${explored ? '#86efac' : '#e2e8f0'}`,
+                  color: explored ? '#15803d' : '#64748b',
+                  cursor: 'pointer',
+                  transition: 'all 0.25s',
+                }}
+                onMouseEnter={e => { if (!explored) { e.currentTarget.style.background = '#f0fdfa'; e.currentTarget.style.borderColor = '#ccfbf1'; e.currentTarget.style.color = '#0F766E' } }}
+                onMouseLeave={e => { if (!explored) { e.currentTarget.style.background = 'white'; e.currentTarget.style.borderColor = '#e2e8f0'; e.currentTarget.style.color = '#64748b' } }}
+              >
+                {explored && <CheckCircle className="w-3 h-3 flex-shrink-0" />}
+                {topic}
+              </button>
+            )
+          })}
         </div>
       </div>
 
@@ -244,33 +301,51 @@ function LessonView({ lesson, onBack, onNext, isLast }: { lesson: Lesson; onBack
   )
 }
 
+// Growth-mindset wrong-answer messages (Motivation by Design — LSFI; Eberly #6)
+const WRONG_MESSAGES = [
+  'Good attempt — check the explanation below.',
+  'Not quite — this one is worth reading carefully.',
+  'Almost — here is how to think about it.',
+  'Worth reviewing — the explanation will help.',
+  'Keep going — mistakes are how we learn this.',
+]
+
 // ── Quiz view ──────────────────────────────────────────────────────────────────
 function QuizView({ course, onDone, onBack }: { course: Course; onDone: () => void; onBack: () => void }) {
+  // Shuffle questions on mount for interleaved practice (LSFI Memory Formation)
+  const [shuffledQuiz] = useState(() => [...course.quiz].sort(() => Math.random() - 0.5))
   const [qIndex, setQIndex]         = useState(0)
   const [selected, setSelected]     = useState<number | null>(null)
   const [showResult, setShowResult] = useState(false)
   const { startQuestion, recordAnswer } = useQuizTracker()
+  const resultsRef = useRef<Record<string, boolean>>({})
 
-  const question = course.quiz[qIndex]
-  const isLast   = qIndex === course.quiz.length - 1
+  const question = shuffledQuiz[qIndex]
+  const isLast   = qIndex === shuffledQuiz.length - 1
 
   useEffect(() => { startQuestion() }, [qIndex]) // eslint-disable-line react-hooks/exhaustive-deps
 
   function choose(i: number) {
     if (showResult) return
+    const correct = i === question.correct
     setSelected(i)
     setShowResult(true)
-    recordAnswer(i === question.correct)
+    recordAnswer(correct)
+    resultsRef.current[question.id] = correct
   }
 
   function advance() {
-    if (isLast) { onDone(); return }
+    if (isLast) {
+      localStorage.setItem('reflection-quiz-results', JSON.stringify(resultsRef.current))
+      onDone()
+      return
+    }
     setQIndex(q => q + 1)
     setSelected(null)
     setShowResult(false)
   }
 
-  const progress = ((qIndex + (showResult ? 1 : 0)) / course.quiz.length) * 100
+  const progress = ((qIndex + (showResult ? 1 : 0)) / shuffledQuiz.length) * 100
 
   return (
     <div className="max-w-2xl mx-auto px-5 py-10 animate-fade-in">
@@ -280,7 +355,7 @@ function QuizView({ course, onDone, onBack }: { course: Course; onDone: () => vo
           <div className="h-full rounded-full" style={{ width: `${progress}%`, background: '#0F766E', transition: 'width 0.5s cubic-bezier(0.19,1,0.22,1)' }} />
         </div>
         <span className="text-xs font-semibold flex-shrink-0" style={{ color: '#94a3b8' }}>
-          {qIndex + 1} / {course.quiz.length}
+          {qIndex + 1} / {shuffledQuiz.length}
         </span>
       </div>
 
@@ -324,8 +399,14 @@ function QuizView({ course, onDone, onBack }: { course: Course; onDone: () => vo
         <div className="rounded-xl px-4 py-3 mb-6 animate-slide-up"
           style={{ background: selected === question.correct ? '#f0fdf4' : '#fff7ed', border: `1px solid ${selected === question.correct ? '#bbf7d0' : '#fed7aa'}` }}>
           <p className="text-xs font-bold mb-1" style={{ color: selected === question.correct ? '#15803d' : '#c2410c' }}>
-            {selected === question.correct ? 'Correct!' : 'Not quite.'}
+            {selected === question.correct ? 'Correct!' : WRONG_MESSAGES[qIndex % WRONG_MESSAGES.length]}
           </p>
+          {/* KC label on wrong answers — elaborative feedback (Banihashem et al. 2025) */}
+          {selected !== question.correct && question.kc && (
+            <p className="text-xs font-semibold mb-1.5" style={{ color: '#c2410c', opacity: 0.75 }}>
+              Skill: {question.kc}
+            </p>
+          )}
           <p className="text-xs leading-relaxed" style={{ color: '#334155' }}>{question.explanation}</p>
         </div>
       )}
@@ -350,8 +431,13 @@ function QuizView({ course, onDone, onBack }: { course: Course; onDone: () => vo
 }
 
 // ── Session summary ────────────────────────────────────────────────────────────
-function SessionSummary({ onRestart, onExit }: { onRestart: () => void; onExit: () => void }) {
+function SessionSummary({ course, onRestart, onExit }: { course: Course; onRestart: () => void; onExit: () => void }) {
   const signals = readSignals()
+  // Per-KC results written by QuizView (Knowledge Organisation — Eberly #2)
+  const quizResults: Record<string, boolean> = (() => {
+    try { return JSON.parse(localStorage.getItem('reflection-quiz-results') ?? '{}') }
+    catch { return {} }
+  })()
   const dwellSec   = (signals.dwellTime / 1000).toFixed(0)
   const latencySec = signals.responseLatency > 0 ? (signals.responseLatency / 1000).toFixed(1) : '—'
   const accuracy   = Math.round(signals.errorRateTrend * 100)
@@ -408,8 +494,34 @@ function SessionSummary({ onRestart, onExit }: { onRestart: () => void; onExit: 
         ))}
       </div>
 
+      {/* Skills covered — Knowledge Organisation (CMU Eberly #2; LSFI Sensemaking) */}
+      {course.quiz.length > 0 && Object.keys(quizResults).length > 0 && (
+        <div className="rounded-2xl overflow-hidden mb-6"
+          style={{ background: 'white', border: '1px solid #f1f5f9', boxShadow: '0 1px 3px rgba(0,0,0,0.04)' }}>
+          <div className="px-5 py-4" style={{ borderBottom: '1px solid #f8fafc' }}>
+            <p className="text-xs font-semibold uppercase tracking-widest" style={{ color: '#94a3b8' }}>Skills practised</p>
+            <p className="text-xs mt-0.5" style={{ color: '#cbd5e1' }}>Each question tests one knowledge component</p>
+          </div>
+          {course.quiz.map((q, i) => {
+            const correct = quizResults[q.id]
+            const attempted = q.id in quizResults
+            return (
+              <div key={q.id} className="px-5 py-3 flex items-center gap-3"
+                style={{ borderBottom: i < course.quiz.length - 1 ? '1px solid #f8fafc' : 'none' }}>
+                <div className="w-5 h-5 rounded-full flex items-center justify-center flex-shrink-0"
+                  style={{ background: !attempted ? '#f8fafc' : correct ? '#f0fdf4' : '#fef2f2', border: `1px solid ${!attempted ? '#e2e8f0' : correct ? '#bbf7d0' : '#fecaca'}` }}>
+                  {attempted && correct  && <CheckCircle className="w-3 h-3" style={{ color: '#16a34a' }} />}
+                  {attempted && !correct && <XCircle    className="w-3 h-3" style={{ color: '#dc2626' }} />}
+                </div>
+                <p className="text-xs flex-1" style={{ color: '#334155' }}>{q.kc}</p>
+              </div>
+            )
+          })}
+        </div>
+      )}
+
       <div className="flex gap-3">
-        <button onClick={() => { clearSignals(); onRestart() }}
+        <button onClick={() => { clearSignals(); localStorage.removeItem('reflection-quiz-results'); onRestart() }}
           className="flex items-center gap-2 px-4 py-2.5 rounded-xl text-sm font-semibold flex-1 justify-center"
           style={{ background: 'white', border: '1px solid #e2e8f0', color: '#64748b', cursor: 'pointer' }}>
           <RotateCcw className="w-4 h-4" /> Try again
@@ -565,6 +677,7 @@ export function Classroom({ onExit }: Props) {
           lesson={currentLesson}
           onBack={() => setScreen({ name: 'home' })}
           onNext={() => {
+            markLessonComplete(currentLesson!.id)
             const next = course.lessons[lessonIndex + 1]
             if (next) setScreen({ name: 'lesson', id: next.id })
             else setScreen({ name: 'quiz' })
@@ -587,6 +700,7 @@ export function Classroom({ onExit }: Props) {
 
       {selectedCourse && screen.name === 'summary' && (
         <SessionSummary
+          course={course}
           onRestart={() => setScreen({ name: 'home' })}
           onExit={onExit}
         />

@@ -9,6 +9,7 @@ import { STUDENTS } from '../data/mockData'
 interface Props {
   studentId: string
   onBack: () => void
+  onLogout: () => void
 }
 
 interface SignalRowProps {
@@ -94,7 +95,7 @@ function useNotes(studentId: string) {
   return { notes, draft, setDraft, save }
 }
 
-export function StudentDetail({ studentId, onBack }: Props) {
+export function StudentDetail({ studentId, onBack, onLogout }: Props) {
   const student = STUDENTS.find(s => s.id === studentId)
   if (!student) return null
 
@@ -112,7 +113,7 @@ export function StudentDetail({ studentId, onBack }: Props) {
 
   return (
     <div style={{ background: '#FAFAF5', minHeight: '100vh' }}>
-      <Header onBack={onBack} title={student.name} />
+      <Header onBack={onBack} onLogout={onLogout} title={student.name} />
 
       <main className="max-w-3xl mx-auto px-4 sm:px-6 py-10 space-y-5 animate-fade-in">
 

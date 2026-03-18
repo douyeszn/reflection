@@ -16,6 +16,12 @@ type View =
 export default function App() {
   const [view, setView] = useState<View>({ name: 'landing' })
 
+  function handleLogout() {
+    localStorage.removeItem('reflection-teacher')
+    localStorage.removeItem('reflection-student-name')
+    setView({ name: 'landing' })
+  }
+
   if (view.name === 'landing') {
     return (
       <Landing
@@ -36,7 +42,7 @@ export default function App() {
   }
 
   if (view.name === 'classroom') {
-    return <Classroom onExit={() => setView({ name: 'landing' })} />
+    return <Classroom onExit={handleLogout} />
   }
 
   if (view.name === 'student') {
@@ -44,6 +50,7 @@ export default function App() {
       <StudentDetail
         studentId={view.id}
         onBack={() => setView({ name: 'dashboard' })}
+        onLogout={handleLogout}
       />
     )
   }
@@ -51,6 +58,7 @@ export default function App() {
   return (
     <Dashboard
       onStudentSelect={(id) => setView({ name: 'student', id })}
+      onLogout={handleLogout}
     />
   )
 }

@@ -12,6 +12,7 @@ export interface QuizQuestion {
   options: string[]
   correct: number
   explanation: string
+  kc: string  // Knowledge Component this question tests (for elaborative feedback)
 }
 
 export interface Course {
@@ -88,6 +89,7 @@ export const FRACTIONS_COURSE: Course = {
       text: 'In the fraction 3/8, what is the denominator?',
       options: ['3', '8', '11', '5'],
       correct: 1,
+      kc: 'Identifying the denominator',
       explanation: 'The denominator is the bottom number — 8. It tells us the whole was divided into 8 equal parts.',
     },
     {
@@ -95,6 +97,7 @@ export const FRACTIONS_COURSE: Course = {
       text: 'A loaf of bread is cut into 6 equal slices. Emmanuel eats 2 slices. What fraction of the bread did he eat?',
       options: ['2/8', '6/2', '2/6', '4/6'],
       correct: 2,
+      kc: 'Writing fractions from real-world scenarios',
       explanation: '2 slices out of 6 total slices = 2/6. Emmanuel ate 2/6 of the bread.',
     },
     {
@@ -102,6 +105,7 @@ export const FRACTIONS_COURSE: Course = {
       text: 'What is 3/10 + 4/10?',
       options: ['7/20', '7/10', '12/10', '1/10'],
       correct: 1,
+      kc: 'Adding fractions with the same denominator',
       explanation: 'Same denominator — just add the numerators: 3 + 4 = 7. Keep the denominator: 7/10.',
     },
     {
@@ -109,6 +113,7 @@ export const FRACTIONS_COURSE: Course = {
       text: 'Which of these is a proper fraction?',
       options: ['8/3', '5/5', '3/7', '10/4'],
       correct: 2,
+      kc: 'Identifying proper fractions',
       explanation: 'A proper fraction has a numerator smaller than the denominator. Only 3/7 fits — 3 is less than 7.',
     },
     {
@@ -116,6 +121,7 @@ export const FRACTIONS_COURSE: Course = {
       text: 'Fatima planted crops in 4/9 of her field on Monday and 3/9 on Tuesday. How much of the field has crops now?',
       options: ['7/18', '1/9', '7/9', '4/9'],
       correct: 2,
+      kc: 'Adding fractions in context',
       explanation: '4/9 + 3/9 = 7/9. Same denominator, so add the numerators: 4 + 3 = 7.',
     },
   ],
@@ -182,6 +188,7 @@ export const LONG_DIVISION_COURSE: Course = {
       text: 'In the division 72 ÷ 8 = 9, which number is the dividend?',
       options: ['8', '9', '72', '1'],
       correct: 2,
+      kc: 'Vocabulary: dividend, divisor, quotient',
       explanation: 'The dividend is the number being divided — 72. The divisor is 8 and the quotient (answer) is 9.',
     },
     {
@@ -194,6 +201,7 @@ export const LONG_DIVISION_COURSE: Course = {
         'Bring down, Divide, Multiply, Subtract',
       ],
       correct: 1,
+      kc: 'Long division steps (Divide, Multiply, Subtract, Bring down)',
       explanation: 'Divide, Multiply, Subtract, Bring down — remember "Does McDonald\'s Sell Burgers?"',
     },
     {
@@ -201,6 +209,7 @@ export const LONG_DIVISION_COURSE: Course = {
       text: 'What is 96 ÷ 4?',
       options: ['22', '26', '24', '28'],
       correct: 2,
+      kc: 'Applying long division to 2-digit problems',
       explanation: '9 ÷ 4 = 2 remainder 1. Bring down 6 → 16 ÷ 4 = 4. Answer: 24. Check: 24 × 4 = 96. ✓',
     },
     {
@@ -208,6 +217,7 @@ export const LONG_DIVISION_COURSE: Course = {
       text: 'Aline has 23 pencils to share equally among 4 students. How many does each student get, and how many are left over?',
       options: ['6 R1', '5 R3', '4 R7', '6 R2'],
       correct: 1,
+      kc: 'Division with remainders in context',
       explanation: '4 × 5 = 20. 23 − 20 = 3 left over. Each student gets 5 pencils with 3 remaining. Check: (5 × 4) + 3 = 23. ✓',
     },
     {
@@ -215,6 +225,7 @@ export const LONG_DIVISION_COURSE: Course = {
       text: 'The remainder must always be __ the divisor.',
       options: ['equal to', 'greater than', 'smaller than', 'double'],
       correct: 2,
+      kc: 'Remainder is always less than the divisor',
       explanation: 'The remainder is always smaller than the divisor. If the remainder were equal to or larger than the divisor, you could divide at least one more time.',
     },
   ],
@@ -285,6 +296,7 @@ export const WORD_PROBLEMS_COURSE: Course = {
         'Multiply all the numbers together',
       ],
       correct: 2,
+      kc: 'Reading strategy: identify the question first',
       explanation: 'Always read the problem carefully first. Identify what is being asked before choosing an operation or writing anything.',
     },
     {
@@ -292,6 +304,7 @@ export const WORD_PROBLEMS_COURSE: Course = {
       text: 'Nakato has 54 stickers. She gives 18 to her sister. How many stickers does Nakato have left?',
       options: ['72', '36', '18', '46'],
       correct: 1,
+      kc: 'Key words for subtraction',
       explanation: '"Have left" is a key word for subtraction. 54 − 18 = 36 stickers remaining.',
     },
     {
@@ -299,6 +312,7 @@ export const WORD_PROBLEMS_COURSE: Course = {
       text: 'A school orders 8 boxes of chalk. Each box has 25 pieces. How many pieces of chalk in total?',
       options: ['33', '17', '200', '125'],
       correct: 2,
+      kc: 'Key words for multiplication',
       explanation: '"Each box has" signals multiplication. 8 × 25 = 200 pieces of chalk.',
     },
     {
@@ -311,6 +325,7 @@ export const WORD_PROBLEMS_COURSE: Course = {
         '30 ÷ 8 = 3',
       ],
       correct: 1,
+      kc: 'Checking answers using inverse operations',
       explanation: 'Check by multiplying: quotient × divisor should equal the dividend. 8 × 4 = 32 ≠ 30, so the answer is wrong. The correct answer is 7 R2.',
     },
     {
@@ -318,6 +333,7 @@ export const WORD_PROBLEMS_COURSE: Course = {
       text: 'Which answer is UNREASONABLE for "How many whole buses are needed to carry 47 students if each bus holds 10?"',
       options: ['4 buses', '5 buses', '47 buses', '4.7 buses'],
       correct: 3,
+      kc: 'Reasonableness of answers',
       explanation: 'You cannot have 4.7 buses — buses are whole objects. The answer must be a whole number. 47 ÷ 10 = 4 R7, so you need 5 buses to carry everyone.',
     },
   ],
